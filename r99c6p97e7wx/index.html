@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en-AU" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; manifest-src 'self'; worker-src 'self'; font-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="description" content="Your whole library in one app: what you&#x27;re reading, your to-read pile, series, a yearly challenge with pace, stats, and an import of your Goodreads or StoryGraph export file. Works offline, no account, no subscription; your library stays on your device.">
+<meta name="author" content="Jaz Sandhu">
+<meta name="generator" content="Holloway &amp; Hart 09Nov2026.1">
+<meta name="color-scheme" content="light dark">
+<title>Book Tracker · Holloway &amp; Hart</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Book Tracker">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#868B4C" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#C5CB7E" media="(prefers-color-scheme: dark)">
+<style>
+:root { color-scheme: light; --bg: #F6F2EA; --card: #FFFDF9; --card-alt: #EFE8DC; --ink: #2F2B27; --muted: #8A8177; --line: #E2D9CB; --input: #FBF3E2; --input-border: #D9C7A6; --accent: #868B4C; --on-accent: #FFFFFF; --highlight: #E8722B; --positive: #6E8B63; --soft: #F3D6C0; }
+:root[data-theme=dark] { color-scheme: dark; --bg: #181B1D; --card: #22272A; --card-alt: #2B3135; --ink: #EDE8E0; --muted: #9AA1A5; --line: #353B40; --input: #2E3539; --input-border: #56605F; --accent: #C5CB7E; --on-accent: #181B1D; --highlight: #F08A48; --positive: #9CC49A; --soft: #543A29; }
+@media (prefers-color-scheme: dark) { :root[data-theme=auto] { color-scheme: dark; --bg: #181B1D; --card: #22272A; --card-alt: #2B3135; --ink: #EDE8E0; --muted: #9AA1A5; --line: #353B40; --input: #2E3539; --input-border: #56605F; --accent: #C5CB7E; --on-accent: #181B1D; --highlight: #F08A48; --positive: #9CC49A; --soft: #543A29; } }
+/* Holloway & Hart app chassis (apps/core.css). Colours come from chassis/theme.py tokens (written above this by the build):
+   --bg --card --card-alt --ink --muted --line --input --input-border --accent --on-accent --highlight --positive --soft */
+*, *::before, *::after { box-sizing: border-box; }
+/* the hidden attribute always wins (8 Nov 2026: .btn's display: inline-flex showed the Delete button on a new Add spending
+   screen, and would on any element whose class sets a display) */
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 17px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, Calibri, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+}
+.serif, h1, h2, .hero-num { font-family: Georgia, "Times New Roman", serif; }
+h1 { font-size: 1.45rem; margin: 0 0 12px; line-height: 1.2; }
+h1:focus { outline: none; }
+h2 { font-size: 1.15rem; margin: 0 0 8px; }
+p { margin: 0 0 10px; }
+a { color: var(--accent); }
+.wrap { max-width: 620px; margin: 0 auto; padding: 0 16px 112px; }
+.topbar { background: var(--accent); color: var(--on-accent); }
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; min-height: 52px; gap: 12px; }
+.topbar .name { font-family: Georgia, "Times New Roman", serif; font-weight: bold; font-size: 1.05rem; }
+.topbar .mark { font-size: .7rem; letter-spacing: .14em; opacity: .9; white-space: nowrap; }
+main { padding-top: 16px; }
+.card { background: var(--card); border-radius: 14px; padding: 16px; margin: 0 0 14px; border-top: 3px solid var(--accent); }
+.card.flat { border-top-color: var(--line); }
+.muted { color: var(--muted); }
+.small { font-size: .9rem; }
+.hero { text-align: center; padding: 22px 16px 18px; }
+.hero .label { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
+.hero-num { font-size: clamp(2.6rem, 13vw, 4rem); font-weight: bold; line-height: 1.05; margin: 2px 0 8px; overflow-wrap: anywhere; }
+.hero .cap { font-size: 1.05rem; }
+.banner { border-radius: 12px; padding: 12px 14px; margin: 0 0 14px; background: var(--soft); border: 1px solid var(--line); }
+.banner strong { display: block; margin-bottom: 2px; }
+.banner .row-buttons { margin-top: 8px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 10px 18px;
+  border-radius: 12px; border: 2px solid transparent; font: inherit; font-weight: 600; cursor: pointer; text-decoration: none;
+  background: var(--card-alt); color: var(--ink);
+}
+.btn-primary { background: var(--accent); color: var(--on-accent); }
+.btn-big { width: 100%; min-height: 60px; font-size: 1.2rem; }
+.btn-quiet { background: transparent; border-color: var(--line); }
+.btn-danger { background: transparent; border-color: var(--ink); }
+.btn-link { background: none; border: 0; color: var(--accent); font: inherit; font-weight: 600; cursor: pointer; min-height: 44px; padding: 8px 4px; text-decoration: underline; }
+.row-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible, label.chip:focus-within {
+  outline: 3px solid var(--highlight); outline-offset: 2px;
+}
+label { display: block; font-weight: 600; margin: 12px 0 4px; }
+.hint { display: block; font-weight: normal; color: var(--muted); font-size: .9rem; }
+input[type=text], input[type=date], input[type=number], select {
+  width: 100%; min-height: 48px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--input);
+  border: 1.5px solid var(--input-border); border-radius: 10px;
+}
+input.big { font-size: 2rem; min-height: 64px; text-align: center; font-family: Georgia, "Times New Roman", serif; }
+.err { color: var(--ink); font-weight: 600; margin: 6px 0 0; }
+.err::before { content: "\2192  "; }
+.check { display: flex; align-items: center; gap: 10px; min-height: 48px; font-weight: 600; margin: 10px 0 0; }
+.check input { width: 24px; height: 24px; accent-color: var(--accent); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.chip { position: relative; margin: 0; font-weight: 500; }
+.chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chip span { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; border-radius: 22px; border: 1.5px solid var(--input-border); background: var(--input); cursor: pointer; }
+.chip input:checked + span { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.chip input:checked + span::before { content: "\2713  "; }
+.list { list-style: none; margin: 0; padding: 0; }
+.list li { border-top: 1px solid var(--line); padding: 10px 0; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.list li:first-child { border-top: 0; }
+.list .what { flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
+.list .amt { font-weight: 700; white-space: nowrap; }
+.tag { display: inline-block; font-size: .8rem; padding: 2px 8px; border-radius: 10px; background: var(--card-alt); margin-top: 3px; }
+.bar { height: 12px; border-radius: 6px; background: var(--card-alt); overflow: hidden; margin-top: 4px; }
+.bar > i { display: block; height: 100%; background: var(--highlight); }
+.stat { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.stat:first-of-type { border-top: 0; }
+.stat b { white-space: nowrap; }
+details summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
+nav.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom); z-index: 5;
+}
+nav.tabs .wrap { display: flex; padding: 0 8px; }
+nav.tabs button {
+  flex: 1 1 0; min-height: 60px; background: none; border: 0; color: var(--muted); font: inherit; font-size: .85rem;
+  font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+}
+nav.tabs button .ico { font-size: 1.25rem; line-height: 1; }
+nav.tabs button.on { color: var(--accent); }
+nav.tabs button.on .lbl { text-decoration: underline; text-underline-offset: 4px; }
+#toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 76px; z-index: 9; max-width: calc(100% - 32px);
+  background: var(--ink); color: var(--bg); border-radius: 12px; padding: 6px 8px 6px 16px; display: flex; gap: 12px; align-items: center;
+}
+#toast[hidden] { display: none; }
+#toast .btn-link { color: var(--bg); }
+#modal { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); z-index: 10; display: flex; align-items: center; justify-content: center; padding: 16px; }
+#modal[hidden] { display: none; }
+.modal-card { background: var(--card); color: var(--ink); border-radius: 14px; padding: 20px; max-width: 460px; width: 100%; }
+.steps { display: flex; gap: 6px; margin-bottom: 12px; }
+.steps i { flex: 1; height: 6px; border-radius: 3px; background: var(--card-alt); }
+.steps i.on { background: var(--accent); }
+.sample-flag { font-weight: 700; letter-spacing: .08em; }
+footer.foot { text-align: center; font-size: .8rem; color: var(--muted); margin: 24px 0 0; }
+@media (min-width: 900px) { body { font-size: 18px; } .wrap { max-width: 680px; } }
+@media (prefers-reduced-motion: no-preference) {
+  .btn, .chip span, nav.tabs button { transition: background-color .15s, color .15s; }
+}
+@media print { nav.tabs, #toast { display: none; } }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+fieldset.plain { border: 0; margin: 12px 0 0; padding: 0; min-width: 0; }
+fieldset.plain legend { font-weight: 600; padding: 0; margin-bottom: 4px; }
+.banner.slim { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 6px 8px 6px 14px; }
+.banner.slim .btn { min-height: 44px; padding: 6px 14px; }
+.rowbtn {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 10px 0; background: none; border: 0;
+  color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.list li.plain, .list li:has(> .rowbtn) { padding: 0; }
+.rowbtn .chev { font-size: 1.5rem; line-height: 1; color: var(--muted); padding-left: 2px; }
+/* 8 Nov 2026 (71 Christmas Gift Tracker): a 20-block progress bar, a 'done' tag, and textareas styled like the inputs */
+.blocks { display: inline-flex; gap: 2px; margin-top: 6px; }
+.blocks i { display: block; width: 9px; height: 10px; border-radius: 2px; background: var(--card-alt); }
+.blocks i.on { background: var(--highlight); }
+.tag.done { background: var(--soft); font-weight: 600; }
+textarea { width: 100%; min-height: 96px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--input); border: 1.5px solid var(--input-border); border-radius: 10px; resize: vertical; }
+.list li .btn { min-height: 44px; padding: 6px 14px; }
+/* 9 Nov 2026 (hosted build, Home Screen web apps): safe areas on phones with a notch or a home bar, and the install card */
+.wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+.topbar { padding-top: env(safe-area-inset-top); }
+.topbar .wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+nav.tabs .wrap { padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); }
+#toast { bottom: calc(76px + env(safe-area-inset-bottom)); }
+.banner.install { margin-top: 16px; }
+.banner.install ol { margin: 6px 0 4px 22px; padding: 0; }
+.banner.install li { margin: 3px 0; }
+.banner.install p { margin: 6px 0 0; }
+/* Product 74: two-column forms, the stats month bars, series tags and a seven-tab bar (apps/p74/app.css, 8 Nov 2026) */
+.two { display: grid; grid-template-columns: 1fr; gap: 0 12px; }
+@media (min-width: 560px) { .two { grid-template-columns: 1fr 1fr; } }
+.row-buttons.mini { gap: 6px; }
+.row-buttons.mini .btn { min-height: 44px; padding: 6px 12px; font-size: .9rem; }
+.list li[data-book] .prog { display: inline-block; }
+.months li.plain { display: grid; grid-template-columns: 36px 1fr; gap: 2px 10px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line); }
+.months li.plain:first-child { border-top: 0; }
+.months .mo { font-weight: 700; grid-row: span 2; }
+.months .bar { margin-top: 0; height: 10px; }
+.pick { font-family: Georgia, "Times New Roman", serif; font-size: 1.35rem; margin-top: 12px; }
+input[type=search] { width: 100%; min-height: 48px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--input); border: 1.5px solid var(--input-border); border-radius: 10px; }
+.tag + .small { margin-left: 4px; }
+nav.tabs button { font-size: .72rem; min-width: 0; padding: 0 2px; }
+nav.tabs button .ico { font-size: 1.1rem; }
+@media (min-width: 560px) { nav.tabs button { font-size: .85rem; } }
+/* Stats: the genre, author and title values run long, so each stat stacks its label over a wrapping value (core.css keeps .stat b on one line for number stats) */
+[data-screen=stats] .stat { flex-direction: column; align-items: flex-start; gap: 2px; }
+[data-screen=stats] .stat > span { font-size: .85rem; color: var(--muted); }
+[data-screen=stats] .stat b { white-space: normal; overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><span class="name">Book Tracker</span><span class="mark">HOLLOWAY &amp; HART</span></div></header>
+<div class="wrap">
+<main id="main">
+  <div id="banners"></div>
+
+  <section data-screen="welcome" hidden>
+    <div class="steps" aria-hidden="true"><i id="st1"></i><i id="st2"></i><i id="st3"></i></div>
+    <div id="welcome-1">
+      <h1>Hi. How many books this year?</h1>
+      <p>A reading goal for <span id="w-goal-year"></span>. The app shows whether you're on pace. You can skip this and set it later.</p>
+      <form id="w-form1" class="card" novalidate>
+        <label for="w-goal">Books to finish this year</label>
+        <input id="w-goal" type="text" inputmode="numeric" autocomplete="off" placeholder="24">
+        <p class="err" id="w-err1" hidden>Type a whole number, such as 24, or leave it blank.</p>
+        <div class="row-buttons" style="margin-top:14px"><button class="btn btn-primary" type="submit">Next</button><button type="button" class="btn btn-quiet" id="w-goal-skip">Skip</button></div>
+      </form>
+      <div class="card flat">
+        <h2>Just looking?</h2>
+        <p>See the app filled with made-up books first. One tap clears them.</p>
+        <button type="button" class="btn btn-quiet" id="w-sample">Try it with sample data first</button>
+      </div>
+    </div>
+    <div id="welcome-2" hidden>
+      <h1>Your first books</h1>
+      <p>Add one by hand, or bring your whole history across from a Goodreads or StoryGraph export file.</p>
+      <div class="row-buttons">
+        <button type="button" class="btn btn-primary" id="w-add">+ Add a book</button>
+        <button type="button" class="btn btn-quiet" id="w-import">Import from Goodreads or StoryGraph</button>
+      </div>
+      <p><button type="button" class="btn-link" id="w-skip2">Skip for now</button></p>
+    </div>
+    <div id="welcome-3" hidden>
+      <h1>You're set</h1>
+      <p>Home shows what you're reading, your challenge and what you finished last. The Library holds everything.</p>
+      <button type="button" class="btn btn-primary btn-big" id="w-finish">Show my books</button>
+    </div>
+  </section>
+
+  <section data-screen="home" hidden>
+    <h1 class="sr">Home</h1>
+    <div class="card"><h2>Reading now</h2><ul class="list" id="now-list"></ul><p class="muted small" id="now-none">Nothing on the go. Open a book in the Library and set it to Reading.</p></div>
+    <div class="card hero" id="challenge"><div class="label" id="ch-title"></div><div class="hero-num" id="ch-num"></div><div class="cap" id="ch-cap"></div><p class="small muted" id="ch-note" style="margin-top:8px"></p></div>
+    <form id="qa-form" class="card flat" novalidate>
+      <h2>Quick add</h2>
+      <label for="qa-title">Title</label>
+      <input id="qa-title" type="text" maxlength="200" autocomplete="off">
+      <label for="qa-author">Author <span class="hint">Optional</span></label>
+      <input id="qa-author" type="text" maxlength="120" autocomplete="off">
+      <div class="row-buttons" style="margin-top:10px"><button class="btn btn-primary" type="submit">Add to To read</button></div>
+    </form>
+    <div class="card flat"><h2>Finished last</h2><ul class="list" id="last-list"></ul><p class="muted small" id="last-none">No finished books yet.</p></div>
+  </section>
+
+  <section data-screen="library" hidden>
+    <h1>Library</h1>
+    <div class="row-buttons"><button type="button" class="btn btn-primary" id="add-book-btn">+ Add a book</button></div>
+    <div class="card flat" style="margin-top:14px">
+      <label for="lf-q">Search <span class="hint">Title, author, series, tag</span></label>
+      <input id="lf-q" type="search" autocomplete="off">
+      <div class="two">
+        <div><label for="lf-status">Status</label><select id="lf-status"><option value="">Any status</option><option>To read</option><option>Reading</option><option>Finished</option><option>Did not finish</option></select></div>
+        <div><label for="lf-genre">Genre</label><select id="lf-genre"></select></div>
+        <div><label for="lf-rating">Rating</label><select id="lf-rating"><option value="">Any rating</option><option value="5">5 stars</option><option value="4">4 stars or more</option><option value="3">3 stars or more</option><option value="2">2 stars or more</option><option value="1">1 star or more</option></select></div>
+        <div><label for="lf-year">Year finished</label><select id="lf-year"></select></div>
+        <div><label for="lf-sort">Sort by</label><select id="lf-sort"><option value="title">Title</option><option value="author">Author</option><option value="finished">Date finished</option><option value="rating">Rating</option></select></div>
+        <div><label>&nbsp;</label><button type="button" class="btn btn-quiet" id="lf-clear">Clear filters</button></div>
+      </div>
+    </div>
+    <div class="card"><h2 id="lib-count"></h2><ul class="list" id="lib-list"></ul><p class="muted small" id="lib-none">No books match.</p></div>
+  </section>
+
+  <section data-screen="book-edit" hidden>
+    <h1 id="bk-title-h">Add a book</h1>
+    <form id="bk-form" class="card" novalidate>
+      <label for="bk-title">Title</label>
+      <input id="bk-title" type="text" maxlength="200" autocomplete="off">
+      <label for="bk-author">Author</label>
+      <input id="bk-author" type="text" maxlength="120" autocomplete="off">
+      <div class="two">
+        <div><label for="bk-series">Series <span class="hint">Optional</span></label><input id="bk-series" type="text" maxlength="80" autocomplete="off"></div>
+        <div><label for="bk-no">Number in series</label><input id="bk-no" type="text" inputmode="decimal" autocomplete="off"></div>
+        <div><label for="bk-format">Format</label><select id="bk-format"><option value="">Not set</option><option>Print</option><option>Ebook</option><option>Audio</option></select></div>
+        <div><label for="bk-status">Status</label><select id="bk-status"><option>To read</option><option>Reading</option><option>Finished</option><option>Did not finish</option></select></div>
+        <div><label for="bk-rating">Rating <span class="hint">Optional</span></label>
+          <select id="bk-rating"><option value="">No rating</option><option value="5">5</option><option value="4.5">4.5</option><option value="4">4</option><option value="3.5">3.5</option><option value="3">3</option><option value="2.5">2.5</option><option value="2">2</option><option value="1.5">1.5</option><option value="1">1</option><option value="0.5">0.5</option></select></div>
+        <div><label for="bk-genre">Genre</label><select id="bk-genre"></select></div>
+        <div><label for="bk-pages">Pages</label><input id="bk-pages" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="bk-read">Pages read so far</label><input id="bk-read" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="bk-started">Started</label><input id="bk-started" type="date"></div>
+        <div><label for="bk-finished">Finished</label><input id="bk-finished" type="date"></div>
+      </div>
+      <label for="bk-tags">Tags <span class="hint">Separated by commas</span></label>
+      <input id="bk-tags" type="text" autocomplete="off">
+      <label class="check"><input id="bk-owned" type="checkbox"> I own a copy</label>
+      <label for="bk-isbn">ISBN <span class="hint">Optional</span></label>
+      <input id="bk-isbn" type="text" maxlength="20" autocomplete="off">
+      <label for="bk-notes">Notes or review <span class="hint">Optional</span></label>
+      <textarea id="bk-notes" rows="4"></textarea>
+      <p class="err" id="bk-err" hidden></p>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary" type="submit" id="bk-save">Save book</button>
+        <button type="button" class="btn btn-quiet" id="bk-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="bk-delete" hidden>Remove</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="tbr" hidden>
+    <h1>To read</h1>
+    <p class="muted">Your pile, in the order you want to read it. Move books up or down.</p>
+    <div class="card flat">
+      <label for="tbr-genre">Pick my next read from</label>
+      <select id="tbr-genre"></select>
+      <div class="row-buttons" style="margin-top:10px"><button type="button" class="btn btn-primary" id="tbr-pick-btn">Pick my next read</button></div>
+      <p class="pick" id="tbr-pick" hidden aria-live="polite"></p>
+    </div>
+    <div class="card"><ul class="list" id="tbr-list"></ul><p class="muted small" id="tbr-none">Nothing on the list. Add a book and set it to To read.</p></div>
+  </section>
+
+  <section data-screen="series" hidden>
+    <h1>Series</h1>
+    <p class="muted">Every series in your library: what you've read, what you own, the next unread number and any numbers you're missing.</p>
+    <div class="card"><ul class="list" id="series-list"></ul><p class="muted small" id="series-none">No series yet. Give a book a series name and number.</p></div>
+  </section>
+
+  <section data-screen="stats" hidden>
+    <h1>Stats</h1>
+    <div class="card flat"><label for="st-year">Year</label><select id="st-year"></select></div>
+    <div class="card"><h2 id="st-books"></h2><ul class="list months" id="st-months"></ul></div>
+    <div class="card flat">
+      <div class="stat"><span>Average rating</span><b id="st-avg"></b></div>
+      <div class="stat"><span>Top genres</span><b id="st-genres"></b></div>
+      <div class="stat"><span>Top authors</span><b id="st-authors"></b></div>
+      <div class="stat"><span>Formats</span><b id="st-formats"></b></div>
+      <div class="stat"><span>Did not finish</span><b id="st-dnf"></b></div>
+      <div class="stat"><span>Longest</span><b id="st-longest"></b></div>
+      <div class="stat"><span>Shortest</span><b id="st-shortest"></b></div>
+    </div>
+  </section>
+
+  <section data-screen="import" hidden>
+    <h1>Import</h1>
+    <p class="muted">Bring your history across from a Goodreads or StoryGraph export file (a .csv you download from your account), or load this app's own CSV. Columns are matched by name, so an older or newer export still works.</p>
+    <div class="card">
+      <h2>Import a CSV</h2>
+      <p class="small">Goodreads: My Books → Tools → Import and export → Export Library. StoryGraph: Manage account → Manage your data → Export StoryGraph library. The guide has the steps.</p>
+      <label class="btn btn-primary" for="import-file" style="margin:0">Choose a CSV file</label>
+      <input id="import-file" type="file" accept=".csv,text/csv" hidden>
+      <div id="import-preview" aria-live="polite" style="margin-top:12px"></div>
+    </div>
+    <div class="card flat">
+      <h2>Export</h2>
+      <p id="lib-size"></p>
+      <p class="small">Save your library as a CSV you can open in a spreadsheet or import back into this app.</p>
+      <button type="button" class="btn btn-quiet" id="export-btn">Export my library as CSV</button>
+    </div>
+  </section>
+
+  <section data-screen="settings" hidden>
+    <h1>Settings</h1>
+    <form id="s-goal-form" class="card" novalidate>
+      <h2>Reading goal for <span id="s-goal-year"></span></h2>
+      <label for="s-goal">Books to finish this year <span class="hint">Blank means no goal.</span></label>
+      <input id="s-goal" type="text" inputmode="numeric" autocomplete="off">
+      <p class="err" id="s-goal-err" hidden>Type a whole number, such as 24.</p>
+    </form>
+    <div class="card">
+      <h2>Genres</h2>
+      <label for="s-genres">One per line, in the order you like</label>
+      <textarea id="s-genres" rows="6"></textarea>
+    </div>
+    <div class="card flat">
+      <h2>Look</h2>
+      <div class="chips" role="radiogroup" aria-label="Theme">
+        <label class="chip"><input type="radio" name="theme" value="auto"><span>Follow my device</span></label>
+        <label class="chip"><input type="radio" name="theme" value="light"><span>Light</span></label>
+        <label class="chip"><input type="radio" name="theme" value="dark"><span>Dark</span></label>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Backup</h2>
+      <p>Your library stays in this browser on this device. A backup is a small file with everything in it, so you can get it back if the browser's data is cleared or you change devices.</p>
+      <p class="muted small" id="last-backup"></p>
+      <div class="row-buttons">
+        <button type="button" class="btn btn-primary" id="backup-btn">Back up now</button>
+        <label class="btn btn-quiet" for="restore-file" style="margin:0">Restore a backup</label>
+        <input id="restore-file" type="file" accept=".json,application/json" hidden>
+      </div>
+      <div id="restore-msg" aria-live="polite"></div>
+    </div>
+    <div class="card flat">
+      <h2>Sample books</h2>
+      <p id="sample-state"></p>
+      <button type="button" class="btn btn-quiet" id="sample-btn"></button>
+    </div>
+    <div class="card flat">
+      <h2>Start fresh</h2>
+      <p>Deletes every book, your goals and your genres from this browser. Back up first if you might want them again.</p>
+      <button type="button" class="btn btn-danger" id="fresh-btn">Start fresh</button>
+    </div>
+    <div class="card flat">
+      <h2>Help</h2>
+      <p>How your library is kept, backups, importing a Goodreads or StoryGraph export file, moving to a new device.</p>
+      <button type="button" class="btn btn-quiet" id="help-btn">Open Help</button>
+    </div>
+    <p class="muted small" id="app-version" aria-live="polite"></p>
+    <footer class="foot">Book Tracker · version 1 · HOLLOWAY &amp; HART · Digital downloads that do what they say · Made in Melbourne</footer>
+  </section>
+
+  <section data-screen="help" hidden>
+    <h1>Help</h1>
+    <div class="card"><h2>Where your library is kept</h2>
+      <p>Everything you type stays in this browser on this device. Nothing is sent anywhere, and the app works with no internet. There is no account and no subscription.</p></div>
+    <div class="card"><h2>Keep a backup</h2>
+      <p>Settings → Back up now saves a small .json file to your downloads. Do it every few weeks. The app reminds you if it has been 30 days.</p>
+      <p>If you clear your browser's history or site data, the app's library goes with it. A backup brings it back: Settings → Restore a backup.</p></div>
+    <div class="card"><h2>Open it the same way each time</h2>
+      <p>Each browser keeps its own copy. If you open the app in two different browsers, you get two separate copies. Pick one browser and keep the app file in one place: in some browsers a moved or renamed file opens empty. Restore your backup if that happens.</p></div>
+    <div class="card"><h2>A new phone or computer</h2>
+      <p>On the old device: Settings → Back up now. Copy the app file and the backup file to the new device, open the app there, then Settings → Restore a backup.</p></div>
+    <div class="card"><h2>Importing a Goodreads or StoryGraph export</h2>
+      <p>Download your export file from your Goodreads or StoryGraph account (the Import screen and the guide give the steps), then Import → Choose a CSV file. The app shows how many books are new and how many are already in your library (matched by title and author), then adds the new ones. Nothing is removed. Tick 'Update matches' if you want the file to change the status, rating and dates of books you already have.</p>
+      <p>The app reads the file you give it; it doesn't look anything up online and isn't connected to those sites.</p></div>
+    <div class="card"><h2>The challenge and the stats</h2>
+      <p>The challenge counts books with the status Finished and a finish date in this year. 'On pace' means you've finished at least your goal × the day of the year ÷ the days in the year. Stats count finished books by their finish month.</p></div>
+    <button type="button" class="btn btn-quiet" id="help-back">Back to Settings</button>
+  </section>
+</main>
+</div>
+<nav class="tabs" id="tabs" aria-label="Screens"><div class="wrap">
+  <button type="button" data-nav="home"><span class="ico" aria-hidden="true">&#9679;</span><span class="lbl">Home</span></button>
+  <button type="button" data-nav="library"><span class="ico" aria-hidden="true">&#9776;</span><span class="lbl">Library</span></button>
+  <button type="button" data-nav="tbr"><span class="ico" aria-hidden="true">&#9734;</span><span class="lbl">To read</span></button>
+  <button type="button" data-nav="series"><span class="ico" aria-hidden="true">&#8801;</span><span class="lbl">Series</span></button>
+  <button type="button" data-nav="stats"><span class="ico" aria-hidden="true">&#9636;</span><span class="lbl">Stats</span></button>
+  <button type="button" data-nav="import"><span class="ico" aria-hidden="true">&#8681;</span><span class="lbl">Import</span></button>
+  <button type="button" data-nav="settings"><span class="ico" aria-hidden="true">&#9881;</span><span class="lbl">Settings</span></button>
+</div></nav>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<div id="modal" hidden></div>
+
+<script src="./app.js"></script>
+</body>
+</html>
