@@ -1,4 +1,4 @@
-window.HH_BUILD = {"id": "71", "version": "09Nov2026.1", "hosted": true};
+window.HH_BUILD = {"id": "71", "version": "09Nov2026.2", "hosted": true};
 /* Holloway & Hart app chassis (apps/core.js), 7 Nov 2026.
    Shared by every single-file offline app: calendar dates as day numbers (no time-zone drift), money in integer cents,
    localStorage with a schema version and a clear banner when the browser won't keep data, Backup / Restore as .json,
@@ -185,12 +185,14 @@ var HH = (function () {
       }
     } catch (e) {}
   }
-  // Backup: on a touch device that can share a file, the share sheet (Save to Files, email, a cloud drive); otherwise the
+  // Backup: on a phone or tablet that can share a file, the share sheet (Save to Files, email, a cloud drive); otherwise the
   // download as before. Returns "share" or "download" so the app can word its message. A share the buyer cancels is left alone;
   // a share that fails for any other reason falls back to the download.
+  function mobile() {               // a phone or tablet (never a touch-screen laptop: a computer keeps the plain download)
+    return applePhone() || /Android|Mobi/i.test(navigator.userAgent || "");
+  }
   function saveFile(name, text) {
-    var touch = navigator.maxTouchPoints > 0;
-    if (touch && navigator.share && navigator.canShare && typeof File === "function") {
+    if (mobile() && navigator.share && navigator.canShare && typeof File === "function") {
       try {
         var f = new File([text], name, { type: "application/json" });
         if (navigator.canShare({ files: [f] })) {

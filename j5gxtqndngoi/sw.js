@@ -3,7 +3,7 @@
    clears this app's older caches and takes over, and the page reloads itself once. Nothing is fetched from anywhere but the app's
    own folder. */
 "use strict";
-var VERSION = "09Nov2026.1";
+var VERSION = "09Nov2026.2";
 var PREFIX = "hh71-";
 var CACHE = PREFIX + VERSION;
 var FILES = ["./", "./index.html", "./app.js", "./sw.js", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./maskable-512.png", "./apple-touch-icon.png"];
