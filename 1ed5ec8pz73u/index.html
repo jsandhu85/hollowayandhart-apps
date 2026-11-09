@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en-AU" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; manifest-src 'self'; worker-src 'self'; font-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="description" content="Your whole budget in one app: what&#x27;s safe to spend until payday, a monthly budget by category, a bills calendar, debt payoff, savings goals and net worth. Works offline, no account, no subscription; your information stays on your device.">
+<meta name="author" content="Jaz Sandhu">
+<meta name="generator" content="Holloway &amp; Hart 09Nov2026.1">
+<meta name="color-scheme" content="light dark">
+<title>Budget Planner · Holloway &amp; Hart</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Budget Plan">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#143B2E" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#9CC49A" media="(prefers-color-scheme: dark)">
+<style>
+:root { color-scheme: light; --bg: #F6F2EA; --card: #FFFDF9; --card-alt: #EFE8DC; --ink: #2F2B27; --muted: #8A8177; --line: #E2D9CB; --input: #FBF3E2; --input-border: #D9C7A6; --accent: #143B2E; --on-accent: #FFFFFF; --highlight: #E8722B; --positive: #6E8B63; --soft: #F3D6C0; }
+:root[data-theme=dark] { color-scheme: dark; --bg: #181B1D; --card: #22272A; --card-alt: #2B3135; --ink: #EDE8E0; --muted: #9AA1A5; --line: #353B40; --input: #2E3539; --input-border: #56605F; --accent: #9CC49A; --on-accent: #181B1D; --highlight: #F08A48; --positive: #9CC49A; --soft: #543A29; }
+@media (prefers-color-scheme: dark) { :root[data-theme=auto] { color-scheme: dark; --bg: #181B1D; --card: #22272A; --card-alt: #2B3135; --ink: #EDE8E0; --muted: #9AA1A5; --line: #353B40; --input: #2E3539; --input-border: #56605F; --accent: #9CC49A; --on-accent: #181B1D; --highlight: #F08A48; --positive: #9CC49A; --soft: #543A29; } }
+/* Holloway & Hart app chassis (apps/core.css). Colours come from chassis/theme.py tokens (written above this by the build):
+   --bg --card --card-alt --ink --muted --line --input --input-border --accent --on-accent --highlight --positive --soft */
+*, *::before, *::after { box-sizing: border-box; }
+/* the hidden attribute always wins (8 Nov 2026: .btn's display: inline-flex showed the Delete button on a new Add spending
+   screen, and would on any element whose class sets a display) */
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 17px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, Calibri, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+}
+.serif, h1, h2, .hero-num { font-family: Georgia, "Times New Roman", serif; }
+h1 { font-size: 1.45rem; margin: 0 0 12px; line-height: 1.2; }
+h1:focus { outline: none; }
+h2 { font-size: 1.15rem; margin: 0 0 8px; }
+p { margin: 0 0 10px; }
+a { color: var(--accent); }
+.wrap { max-width: 620px; margin: 0 auto; padding: 0 16px 112px; }
+.topbar { background: var(--accent); color: var(--on-accent); }
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; min-height: 52px; gap: 12px; }
+.topbar .name { font-family: Georgia, "Times New Roman", serif; font-weight: bold; font-size: 1.05rem; }
+.topbar .mark { font-size: .7rem; letter-spacing: .14em; opacity: .9; white-space: nowrap; }
+main { padding-top: 16px; }
+.card { background: var(--card); border-radius: 14px; padding: 16px; margin: 0 0 14px; border-top: 3px solid var(--accent); }
+.card.flat { border-top-color: var(--line); }
+.muted { color: var(--muted); }
+.small { font-size: .9rem; }
+.hero { text-align: center; padding: 22px 16px 18px; }
+.hero .label { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
+.hero-num { font-size: clamp(2.6rem, 13vw, 4rem); font-weight: bold; line-height: 1.05; margin: 2px 0 8px; overflow-wrap: anywhere; }
+.hero .cap { font-size: 1.05rem; }
+.banner { border-radius: 12px; padding: 12px 14px; margin: 0 0 14px; background: var(--soft); border: 1px solid var(--line); }
+.banner strong { display: block; margin-bottom: 2px; }
+.banner .row-buttons { margin-top: 8px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 10px 18px;
+  border-radius: 12px; border: 2px solid transparent; font: inherit; font-weight: 600; cursor: pointer; text-decoration: none;
+  background: var(--card-alt); color: var(--ink);
+}
+.btn-primary { background: var(--accent); color: var(--on-accent); }
+.btn-big { width: 100%; min-height: 60px; font-size: 1.2rem; }
+.btn-quiet { background: transparent; border-color: var(--line); }
+.btn-danger { background: transparent; border-color: var(--ink); }
+.btn-link { background: none; border: 0; color: var(--accent); font: inherit; font-weight: 600; cursor: pointer; min-height: 44px; padding: 8px 4px; text-decoration: underline; }
+.row-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible, label.chip:focus-within {
+  outline: 3px solid var(--highlight); outline-offset: 2px;
+}
+label { display: block; font-weight: 600; margin: 12px 0 4px; }
+.hint { display: block; font-weight: normal; color: var(--muted); font-size: .9rem; }
+input[type=text], input[type=date], input[type=number], select {
+  width: 100%; min-height: 48px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--input);
+  border: 1.5px solid var(--input-border); border-radius: 10px;
+}
+input.big { font-size: 2rem; min-height: 64px; text-align: center; font-family: Georgia, "Times New Roman", serif; }
+.err { color: var(--ink); font-weight: 600; margin: 6px 0 0; }
+.err::before { content: "\2192  "; }
+.check { display: flex; align-items: center; gap: 10px; min-height: 48px; font-weight: 600; margin: 10px 0 0; }
+.check input { width: 24px; height: 24px; accent-color: var(--accent); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.chip { position: relative; margin: 0; font-weight: 500; }
+.chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chip span { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; border-radius: 22px; border: 1.5px solid var(--input-border); background: var(--input); cursor: pointer; }
+.chip input:checked + span { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.chip input:checked + span::before { content: "\2713  "; }
+.list { list-style: none; margin: 0; padding: 0; }
+.list li { border-top: 1px solid var(--line); padding: 10px 0; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.list li:first-child { border-top: 0; }
+.list .what { flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
+.list .amt { font-weight: 700; white-space: nowrap; }
+.tag { display: inline-block; font-size: .8rem; padding: 2px 8px; border-radius: 10px; background: var(--card-alt); margin-top: 3px; }
+.bar { height: 12px; border-radius: 6px; background: var(--card-alt); overflow: hidden; margin-top: 4px; }
+.bar > i { display: block; height: 100%; background: var(--highlight); }
+.stat { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.stat:first-of-type { border-top: 0; }
+.stat b { white-space: nowrap; }
+details summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
+nav.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom); z-index: 5;
+}
+nav.tabs .wrap { display: flex; padding: 0 8px; }
+nav.tabs button {
+  flex: 1 1 0; min-height: 60px; background: none; border: 0; color: var(--muted); font: inherit; font-size: .85rem;
+  font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+}
+nav.tabs button .ico { font-size: 1.25rem; line-height: 1; }
+nav.tabs button.on { color: var(--accent); }
+nav.tabs button.on .lbl { text-decoration: underline; text-underline-offset: 4px; }
+#toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 76px; z-index: 9; max-width: calc(100% - 32px);
+  background: var(--ink); color: var(--bg); border-radius: 12px; padding: 6px 8px 6px 16px; display: flex; gap: 12px; align-items: center;
+}
+#toast[hidden] { display: none; }
+#toast .btn-link { color: var(--bg); }
+#modal { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); z-index: 10; display: flex; align-items: center; justify-content: center; padding: 16px; }
+#modal[hidden] { display: none; }
+.modal-card { background: var(--card); color: var(--ink); border-radius: 14px; padding: 20px; max-width: 460px; width: 100%; }
+.steps { display: flex; gap: 6px; margin-bottom: 12px; }
+.steps i { flex: 1; height: 6px; border-radius: 3px; background: var(--card-alt); }
+.steps i.on { background: var(--accent); }
+.sample-flag { font-weight: 700; letter-spacing: .08em; }
+footer.foot { text-align: center; font-size: .8rem; color: var(--muted); margin: 24px 0 0; }
+@media (min-width: 900px) { body { font-size: 18px; } .wrap { max-width: 680px; } }
+@media (prefers-reduced-motion: no-preference) {
+  .btn, .chip span, nav.tabs button { transition: background-color .15s, color .15s; }
+}
+@media print { nav.tabs, #toast { display: none; } }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+fieldset.plain { border: 0; margin: 12px 0 0; padding: 0; min-width: 0; }
+fieldset.plain legend { font-weight: 600; padding: 0; margin-bottom: 4px; }
+.banner.slim { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 6px 8px 6px 14px; }
+.banner.slim .btn { min-height: 44px; padding: 6px 14px; }
+.rowbtn {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 10px 0; background: none; border: 0;
+  color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.list li.plain, .list li:has(> .rowbtn) { padding: 0; }
+.rowbtn .chev { font-size: 1.5rem; line-height: 1; color: var(--muted); padding-left: 2px; }
+/* 8 Nov 2026 (71 Christmas Gift Tracker): a 20-block progress bar, a 'done' tag, and textareas styled like the inputs */
+.blocks { display: inline-flex; gap: 2px; margin-top: 6px; }
+.blocks i { display: block; width: 9px; height: 10px; border-radius: 2px; background: var(--card-alt); }
+.blocks i.on { background: var(--highlight); }
+.tag.done { background: var(--soft); font-weight: 600; }
+textarea { width: 100%; min-height: 96px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--input); border: 1.5px solid var(--input-border); border-radius: 10px; resize: vertical; }
+.list li .btn { min-height: 44px; padding: 6px 14px; }
+/* 9 Nov 2026 (hosted build, Home Screen web apps): safe areas on phones with a notch or a home bar, and the install card */
+.wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+.topbar { padding-top: env(safe-area-inset-top); }
+.topbar .wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+nav.tabs .wrap { padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); }
+#toast { bottom: calc(76px + env(safe-area-inset-bottom)); }
+.banner.install { margin-top: 16px; }
+.banner.install ol { margin: 6px 0 4px 22px; padding: 0; }
+.banner.install li { margin: 3px 0; }
+.banner.install p { margin: 6px 0 0; }
+/* Product 72: the home cards grid, the bills calendar, goal rows and a seven-tab bar (apps/p72/app.css, 8 Nov 2026) */
+.cards2 { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 0 0 14px; }
+@media (min-width: 560px) { .cards2 { grid-template-columns: 1fr 1fr; } }
+.linkcard { text-align: left; font: inherit; color: inherit; cursor: pointer; margin: 0; width: 100%; display: block; position: relative; padding-bottom: 36px; }
+.linkcard h2 { margin-bottom: 4px; }
+.linkcard p { margin: 0; }
+.linkcard .more { position: absolute; right: 16px; bottom: 12px; color: var(--accent); font-weight: 600; }
+.mini { list-style: none; margin: 0; padding: 0; }
+.mini li { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; }
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-h { text-align: center; font-size: .75rem; color: var(--muted); font-weight: 600; padding: 2px 0; }
+.cal-d { min-height: 44px; border-radius: 8px; background: var(--card-alt); padding: 3px 4px; font-size: .72rem; line-height: 1.2; overflow-wrap: anywhere; }
+.cal-d.empty { background: transparent; }
+.cal-d .n { display: block; font-weight: 700; font-size: .8rem; margin-bottom: 2px; }
+.cal-d.today .n { color: var(--accent); text-decoration: underline; }
+.cal-d.has { background: var(--soft); }
+.cal-d .cb { display: block; margin-top: 2px; }
+.goal { padding: 6px 0; }
+.goal .row-buttons { margin-top: 6px; }
+.goal-hist { margin-top: 8px; }
+.goal-hist li { padding: 6px 0; }
+nav.tabs button { font-size: .72rem; min-width: 0; padding: 0 2px; }
+nav.tabs button .ico { font-size: 1.1rem; }
+@media (min-width: 560px) { nav.tabs button { font-size: .85rem; } }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><span class="name">Budget Planner</span><span class="mark">HOLLOWAY &amp; HART</span></div></header>
+<div class="wrap">
+<main id="main">
+  <div id="banners"></div>
+
+  <section data-screen="welcome" hidden>
+    <div class="steps" aria-hidden="true"><i id="st1"></i><i id="st2"></i><i id="st3"></i><i id="st4"></i></div>
+    <div id="welcome-1">
+      <h1>Hi. Let's set up your pay.</h1>
+      <p>A few quick steps, then you get one number: what's safe to spend until your next pay. Your budget, bills, debts and goals come next.</p>
+      <form id="w-pay" class="card" novalidate>
+        <label for="w-amount">Take-home pay each time you're paid</label>
+        <input id="w-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="2400.00">
+        <label for="w-freq">How often you're paid</label>
+        <select id="w-freq"><option>Weekly</option><option selected>Fortnightly</option><option>Monthly</option></select>
+        <label for="w-payday">Your next payday <span class="hint">Any payday will do. The app counts forward from it.</span></label>
+        <input id="w-payday" type="date">
+        <label for="w-aside">Put aside each pay <span class="hint">Savings, debt or a buffer. 0 is fine.</span></label>
+        <input id="w-aside" type="text" inputmode="decimal" autocomplete="off" value="0">
+        <p class="err" id="w-err" hidden></p>
+        <div class="row-buttons" style="margin-top:14px"><button class="btn btn-primary" type="submit">Next</button></div>
+      </form>
+      <div class="card flat">
+        <h2>Just looking?</h2>
+        <p>See the app filled in with made-up numbers first: pay, bills, a budget, debts, goals and net worth. One tap clears them.</p>
+        <button type="button" class="btn btn-quiet" id="w-sample">Try it with sample data first</button>
+      </div>
+    </div>
+    <div id="welcome-2" hidden>
+      <h1>Now your bills</h1>
+      <p>Add what comes out of your account: rent, phone, insurance. You can skip this and add them later.</p>
+      <div class="card"><ul class="list" id="w-bill-list"></ul><p class="muted small" id="w-bill-none">No bills yet.</p></div>
+      <div class="row-buttons">
+        <button type="button" class="btn btn-primary" id="w-bill-add">+ Add a bill</button>
+        <button type="button" class="btn btn-quiet" id="w-bills-done">Done</button>
+      </div>
+      <p><button type="button" class="btn-link" id="w-bills-skip">Skip for now</button></p>
+    </div>
+    <div id="welcome-3" hidden>
+      <h1>You're set</h1>
+      <div class="card hero"><div class="label">Safe to Spend</div><div class="hero-num" id="w-safe"></div><div class="cap" id="w-cap"></div></div>
+      <p>From now on, just add what you spend. Everything else is already counted.</p>
+      <button type="button" class="btn btn-primary btn-big" id="w-next3">Next</button>
+    </div>
+    <div id="welcome-4" hidden>
+      <h1>Want to set up a monthly budget, debts or goals now?</h1>
+      <p>Each one is optional. Skip them and they're waiting under their tabs whenever you're ready.</p>
+      <div class="row-buttons">
+        <button type="button" class="btn btn-quiet" id="w-setup-budget">Set up my budget</button>
+        <button type="button" class="btn btn-quiet" id="w-setup-debt">Add a debt</button>
+        <button type="button" class="btn btn-quiet" id="w-setup-goal">Add a goal</button>
+      </div>
+      <button type="button" class="btn btn-primary btn-big" id="w-finish" style="margin-top:16px">Skip for now, show my home screen</button>
+    </div>
+  </section>
+
+  <section data-screen="home" hidden>
+    <h1 class="sr">Home</h1>
+    <div class="card hero" id="hero">
+      <div class="label">Safe to Spend</div>
+      <div class="hero-num" id="safe-amount"></div>
+      <div class="cap" id="safe-caption"></div>
+    </div>
+    <button type="button" class="btn btn-primary btn-big" id="add-btn">+ Add spending</button>
+    <div class="card flat" style="margin-top:14px">
+      <div class="stat"><span>Next payday</span><b id="next-payday"></b></div>
+      <div class="stat"><span>No-spend days this pay</span><b id="nospend"></b></div>
+      <div class="stat"><span>Spent so far this pay</span><b id="spent"></b></div>
+    </div>
+    <div class="cards2">
+      <button type="button" class="card linkcard" id="hc-budget" data-go="budget"><h2>Budget</h2><p id="hc-budget-line"></p><span class="more">Open ›</span></button>
+      <button type="button" class="card linkcard" id="hc-bills" data-go="bills"><h2>Bills</h2><ul class="mini" id="hc-bills-list"></ul><span class="more">Open ›</span></button>
+      <button type="button" class="card linkcard" id="hc-debts" data-go="debts"><h2>Debts</h2><p id="hc-debts-line"></p><span class="more">Open ›</span></button>
+      <button type="button" class="card linkcard" id="hc-goals" data-go="goals"><h2>Goals</h2><p id="hc-goals-line"></p><span class="more">Open ›</span></button>
+      <button type="button" class="card linkcard" id="hc-nw" data-go="networth"><h2>Net worth</h2><p id="hc-nw-line"></p><span class="more">Open ›</span></button>
+    </div>
+    <div class="card" id="bills-card">
+      <h2>Bills this pay</h2>
+      <p id="bills-summary"><span id="bills-count"></span> · <span id="bills-total"></span> <span class="small muted">due before your next payday</span></p>
+      <ul class="list" id="home-bills"></ul>
+    </div>
+    <div class="card flat">
+      <h2>How this number works</h2>
+      <p id="pay-line"></p>
+    </div>
+  </section>
+
+  <section data-screen="add" hidden>
+    <h1 id="add-title">Add spending</h1>
+    <form id="add-form" class="card" novalidate>
+      <label for="add-amount">How much?</label>
+      <input id="add-amount" class="big" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+      <p class="err" id="add-err" hidden></p>
+      <label for="add-note">What was it? <span class="hint">Optional</span></label>
+      <input id="add-note" type="text" maxlength="60" autocomplete="off">
+      <fieldset class="plain"><legend>Category <span class="hint">Other if you don't pick one</span></legend><div class="chips" id="add-cats"></div></fieldset>
+      <p class="small" id="add-day-line">Day: <b id="add-day-text">Today</b> <button type="button" class="btn-link" id="add-day-change">Change day</button></p>
+      <div id="add-day-wrap" hidden><label for="add-date">Day</label><input id="add-date" type="date"></div>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary btn-big" type="submit" id="add-save">Save</button>
+      </div>
+      <div class="row-buttons" style="margin-top:10px">
+        <button type="button" class="btn btn-quiet" id="add-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="add-delete" hidden>Delete</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="budget" hidden>
+    <h1>Budget</h1>
+    <p class="muted">What you planned for each category this month, and what you've spent. Tap an entry below to change it.</p>
+    <div class="row-buttons">
+      <button type="button" class="btn btn-primary" id="bud-edit-btn">Change planned amounts</button>
+      <button type="button" class="btn btn-quiet" id="bud-add">+ Add spending</button>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <label for="bud-month">Month</label>
+      <select id="bud-month"></select>
+      <ul class="list" id="bud-rows" style="margin-top:10px"></ul>
+      <div class="stat" style="margin-top:8px"><span>Planned</span><b id="bud-planned-total"></b></div>
+      <div class="stat"><span>Spent</span><b id="bud-actual-total"></b></div>
+      <div class="stat"><span>Left</span><b id="bud-left-total"></b></div>
+    </div>
+    <div class="card flat"><h2 id="bud-spends-head">Spending this month</h2><ul class="list" id="bud-spends"></ul><p class="muted small" id="bud-spends-none">Nothing logged this month yet.</p></div>
+  </section>
+
+  <section data-screen="budget-edit" hidden>
+    <h1>Planned amounts</h1>
+    <p class="muted">How much you plan to spend in each category every month. Blank means 0. Change the categories themselves in Settings.</p>
+    <form id="bud-form" class="card" novalidate>
+      <div id="bud-form-rows"></div>
+      <p class="err" id="bud-err" hidden></p>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary" type="submit" id="bud-save">Save budget</button>
+        <button type="button" class="btn btn-quiet" id="bud-cancel">Cancel</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="bills" hidden>
+    <h1>Bills</h1>
+    <p class="muted">What comes out of your account, so Safe to Spend already allows for it. Tap a bill to change it.</p>
+    <button type="button" class="btn btn-primary" id="bill-add">+ Add a bill</button>
+    <div class="card" style="margin-top:14px"><h2>Coming up</h2><ul class="list" id="bill-list"></ul><p class="muted small" id="bill-none">No bills yet.</p></div>
+    <div class="card flat">
+      <h2>Calendar</h2>
+      <label for="cal-month">Month</label>
+      <select id="cal-month"></select>
+      <div class="cal" id="cal-grid" style="margin-top:10px"></div>
+      <p class="small" id="cal-total" style="margin-top:8px"></p>
+    </div>
+  </section>
+
+  <section data-screen="bill-edit" hidden>
+    <h1 id="bill-title">Add a bill</h1>
+    <form id="bill-form" class="card" novalidate>
+      <label for="b-name">Bill</label>
+      <input id="b-name" type="text" maxlength="40" autocomplete="off" placeholder="Rent">
+      <label for="b-amount">Amount</label>
+      <input id="b-amount" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+      <label for="b-freq">How often</label>
+      <select id="b-freq"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Quarterly</option><option>Yearly</option><option>One-off</option></select>
+      <label for="b-due">Next due <span class="hint">Any date it was or will be due. The app counts forward from it.</span></label>
+      <input id="b-due" type="date">
+      <label class="check"><input id="b-auto" type="checkbox"> Comes out automatically</label>
+      <span class="hint">Ticked: a direct debit you don't have to remember. Not ticked: you pay it yourself and the app reminds you.</span>
+      <p class="err" id="b-err" hidden></p>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary" type="submit">Save bill</button>
+        <button type="button" class="btn btn-quiet" id="b-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="b-delete" hidden>Delete</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="debts" hidden>
+    <h1>Debts</h1>
+    <p class="muted">Every debt in one place, and the month you could be debt-free at the amount you pay each month.</p>
+    <button type="button" class="btn btn-primary" id="debt-add">+ Add a debt</button>
+    <div class="card" style="margin-top:14px" id="debt-summary">
+      <div class="stat"><span>Owing now</span><b id="debt-owed"></b></div>
+      <div class="stat"><span>Debt-free</span><b id="debt-free"></b></div>
+      <div class="stat"><span>Months to go</span><b id="debt-months"></b></div>
+      <div class="stat"><span>Interest along the way</span><b id="debt-interest"></b></div>
+      <p class="small" id="debt-msg" hidden style="margin-top:8px"></p>
+    </div>
+    <form id="d-form" class="card flat" novalidate>
+      <label for="d-monthly">Paid towards debts each month <span class="hint">All the minimums plus anything extra. The extra goes to one debt at a time.</span></label>
+      <input id="d-monthly" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+      <p class="err" id="d-err" hidden></p>
+      <fieldset class="plain"><legend>Method</legend>
+        <div class="chips" role="radiogroup" aria-label="Method">
+          <label class="chip"><input type="radio" name="method" value="Snowball"><span>Snowball</span></label>
+          <label class="chip"><input type="radio" name="method" value="Avalanche"><span>Avalanche</span></label>
+        </div>
+      </fieldset>
+      <p class="small muted" id="debt-method-note" style="margin-top:8px"></p>
+    </form>
+    <div class="card"><h2>Your debts</h2><ul class="list" id="debt-list"></ul><p class="muted small" id="debt-none">No debts yet.</p></div>
+    <div class="card flat"><h2>How the dates are worked out</h2>
+      <p class="small">Each month, interest is added to every balance (APR ÷ 12), then every minimum is paid, then whatever is left of your monthly amount goes to the next debt in line until it's gone. A debt is paid off in the month its balance reaches zero. It's an estimate: your lender's dates and rounding may differ a little.</p></div>
+  </section>
+
+  <section data-screen="debt-edit" hidden>
+    <h1 id="debt-title">Add a debt</h1>
+    <form id="debt-form" class="card" novalidate>
+      <label for="dt-name">Debt</label>
+      <input id="dt-name" type="text" maxlength="40" autocomplete="off" placeholder="Credit card">
+      <label for="dt-balance">Balance owing</label>
+      <input id="dt-balance" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+      <label for="dt-apr">Interest rate (APR %) <span class="hint">On the statement. 0 for interest-free.</span></label>
+      <input id="dt-apr" type="text" inputmode="decimal" autocomplete="off" placeholder="19.99">
+      <label for="dt-min">Minimum payment each month</label>
+      <input id="dt-min" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+      <p class="err" id="dt-err" hidden></p>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary" type="submit" id="dt-save">Save debt</button>
+        <button type="button" class="btn btn-quiet" id="dt-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="dt-delete" hidden>Delete</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="goals" hidden>
+    <h1>Goals</h1>
+    <p class="muted">What you're saving for, how far along you are, and what to put away each month to get there on time.</p>
+    <button type="button" class="btn btn-primary" id="goal-add">+ Add a goal</button>
+    <div class="card" style="margin-top:14px"><ul class="list" id="goal-list"></ul><p class="muted small" id="goal-none">No goals yet.</p></div>
+  </section>
+
+  <section data-screen="goal-edit" hidden>
+    <h1 id="goal-title">Add a goal</h1>
+    <form id="goal-form" class="card" novalidate>
+      <label for="gl-name">Goal</label>
+      <input id="gl-name" type="text" maxlength="40" autocomplete="off" placeholder="Holiday">
+      <label for="gl-target">Target</label>
+      <input id="gl-target" type="text" inputmode="decimal" autocomplete="off" placeholder="3000">
+      <label for="gl-saved">Saved so far <span class="hint">0 is fine. Use + Add money after that, so each deposit is remembered.</span></label>
+      <input id="gl-saved" type="text" inputmode="decimal" autocomplete="off" placeholder="0">
+      <label for="gl-date">By when <span class="hint">Optional. With a date, the app says what to save each month.</span></label>
+      <input id="gl-date" type="date">
+      <p class="err" id="gl-err" hidden></p>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary" type="submit" id="gl-save">Save goal</button>
+        <button type="button" class="btn btn-quiet" id="gl-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="gl-delete" hidden>Delete</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="goal-money" hidden>
+    <h1 id="gm-title">Add money</h1>
+    <form id="gm-form" class="card" novalidate>
+      <label for="gm-amount">How much did you put away?</label>
+      <input id="gm-amount" class="big" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+      <p class="err" id="gm-err" hidden></p>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary btn-big" type="submit" id="gm-save">Add it</button>
+      </div>
+      <div class="row-buttons" style="margin-top:10px"><button type="button" class="btn btn-quiet" id="gm-cancel">Cancel</button></div>
+    </form>
+  </section>
+
+  <section data-screen="networth" hidden>
+    <h1>Net worth</h1>
+    <p class="muted">What you own minus what you owe. Save a snapshot now and then to watch it change.</p>
+    <div class="card hero"><div class="label">Net worth now</div><div class="hero-num" id="nw-net"></div>
+      <div class="stat"><span>What you own</span><b id="nw-assets-total"></b></div>
+      <div class="stat"><span>What you owe</span><b id="nw-liabs-total"></b></div>
+    </div>
+    <button type="button" class="btn btn-primary btn-big" id="nw-snap-btn">Save today's snapshot</button>
+    <div class="card" style="margin-top:14px"><h2>What you own</h2><ul class="list" id="nw-assets"></ul><p class="muted small" id="nw-assets-none">Nothing listed yet.</p>
+      <button type="button" class="btn btn-quiet" id="asset-add">+ Add something you own</button></div>
+    <div class="card"><h2>What you owe</h2>
+      <label class="check"><input id="nw-debts" type="checkbox"> Include my debts from the Debts screen</label>
+      <ul class="list" id="nw-liabs"></ul><p class="muted small" id="nw-liabs-none">Nothing listed yet.</p>
+      <button type="button" class="btn btn-quiet" id="liab-add">+ Add something you owe</button></div>
+    <div class="card flat"><h2>Snapshots</h2><ul class="list" id="nw-snaps"></ul><p class="muted small" id="nw-snaps-none">No snapshots yet. Save one above.</p></div>
+  </section>
+
+  <section data-screen="nw-edit" hidden>
+    <h1 id="nw-title">Add an asset</h1>
+    <form id="nw-form" class="card" novalidate>
+      <label for="ni-name">Name</label>
+      <input id="ni-name" type="text" maxlength="40" autocomplete="off" placeholder="Savings">
+      <label for="ni-type">Type</label>
+      <select id="ni-type"></select>
+      <label for="ni-value" id="ni-label">What it's worth</label>
+      <input id="ni-value" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+      <p class="err" id="ni-err" hidden></p>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary" type="submit" id="ni-save">Save</button>
+        <button type="button" class="btn btn-quiet" id="ni-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="ni-delete" hidden>Delete</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="settings" hidden>
+    <h1>Settings</h1>
+    <form id="set-form" class="card" novalidate>
+      <h2>Your pay</h2>
+      <label for="s-cur">Currency symbol</label>
+      <input id="s-cur" type="text" maxlength="4" autocomplete="off">
+      <label for="s-pay">Take-home pay each time you're paid</label>
+      <input id="s-pay" type="text" inputmode="decimal" autocomplete="off">
+      <label for="s-freq">How often you're paid</label>
+      <select id="s-freq"><option>Weekly</option><option>Fortnightly</option><option>Monthly</option></select>
+      <label for="s-payday">Your next payday <span class="hint">Any payday will do. The app counts forward from it.</span></label>
+      <input id="s-payday" type="date">
+      <label for="s-aside">Put aside each pay <span class="hint">Savings, debt or a buffer. 0 is fine.</span></label>
+      <input id="s-aside" type="text" inputmode="decimal" autocomplete="off">
+      <p class="err" id="s-err" hidden></p>
+      <p class="muted small" id="s-saved" aria-live="polite"></p>
+    </form>
+    <div class="card">
+      <h2>Budget categories</h2>
+      <label for="s-cats">One per line, in the order you like <span class="hint">Spending you've already logged keeps the category it was given.</span></label>
+      <textarea id="s-cats" rows="6"></textarea>
+      <p class="muted small" id="s-cats-saved" aria-live="polite"></p>
+    </div>
+    <div class="card flat">
+      <h2>Look</h2>
+      <div class="chips" role="radiogroup" aria-label="Theme">
+        <label class="chip"><input type="radio" name="theme" value="auto"><span>Follow my device</span></label>
+        <label class="chip"><input type="radio" name="theme" value="light"><span>Light</span></label>
+        <label class="chip"><input type="radio" name="theme" value="dark"><span>Dark</span></label>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Backup</h2>
+      <p>Your information stays in this browser on this device. A backup is a small file with everything in it, so you can get it back if the browser's data is cleared or you change devices.</p>
+      <p class="muted small" id="last-backup"></p>
+      <div class="row-buttons">
+        <button type="button" class="btn btn-primary" id="backup-btn">Back up now</button>
+        <label class="btn btn-quiet" for="restore-file" style="margin:0">Restore a backup</label>
+        <input id="restore-file" type="file" accept=".json,application/json" hidden>
+      </div>
+      <div id="restore-msg" aria-live="polite"></div>
+    </div>
+    <div class="card flat">
+      <h2>Sample data</h2>
+      <p id="sample-state"></p>
+      <button type="button" class="btn btn-quiet" id="sample-btn"></button>
+    </div>
+    <div class="card flat">
+      <h2>Start fresh</h2>
+      <p>Deletes everything in the app from this browser. Back up first if you might want it again.</p>
+      <button type="button" class="btn btn-danger" id="fresh-btn">Start fresh</button>
+    </div>
+    <div class="card flat">
+      <h2>Help</h2>
+      <p>How your information is kept, backups, moving to a new device, and how the numbers are worked out.</p>
+      <button type="button" class="btn btn-quiet" id="help-btn">Open Help</button>
+    </div>
+    <p class="muted small" id="app-version" aria-live="polite"></p>
+    <footer class="foot">Budget Planner · version 1 · HOLLOWAY &amp; HART · Digital downloads that do what they say · Made in Melbourne</footer>
+  </section>
+
+  <section data-screen="help" hidden>
+    <h1>Help</h1>
+    <div class="card"><h2>Where your information is kept</h2>
+      <p>Everything you type stays in this browser on this device. Nothing is sent anywhere, and the app works with no internet. There is no account and no subscription.</p></div>
+    <div class="card"><h2>Keep a backup</h2>
+      <p>Settings → Back up now saves a small .json file to your downloads. Do it every few weeks. The app reminds you if it has been 30 days.</p>
+      <p>If you clear your browser's history or site data, the app's information goes with it. A backup brings it back: Settings → Restore a backup.</p></div>
+    <div class="card"><h2>Open it the same way each time</h2>
+      <p>Each browser keeps its own copy. If you open the app in two different browsers, you get two separate copies. Pick one browser and keep the app file in one place: in some browsers a moved or renamed file opens empty. Restore your backup if that happens.</p></div>
+    <div class="card"><h2>A new phone or computer</h2>
+      <p>On the old device: Settings → Back up now. Copy the app file and the backup file to the new device, open the app there, then Settings → Restore a backup.</p></div>
+    <div class="card"><h2>The numbers</h2>
+      <p>Safe to Spend = your pay − the bills due this pay − what you put aside − what you've spent so far this pay. A day = Safe to Spend shared over the days left until payday.</p>
+      <p>Budget: each category's planned amount for the month against what you've logged in it. Debts: interest is added monthly (APR ÷ 12), the minimums are paid, and the rest of your monthly amount goes to one debt at a time, smallest balance first (Snowball) or highest rate first (Avalanche). Goals: what's left ÷ the months to your date. Net worth: what you own minus what you owe.</p>
+      <p class="muted small">This app is a planning tool for your own numbers. It isn't financial advice.</p></div>
+    <button type="button" class="btn btn-quiet" id="help-back">Back to Settings</button>
+  </section>
+</main>
+</div>
+<nav class="tabs" id="tabs" aria-label="Screens"><div class="wrap">
+  <button type="button" data-nav="home"><span class="ico" aria-hidden="true">&#9679;</span><span class="lbl">Home</span></button>
+  <button type="button" data-nav="budget"><span class="ico" aria-hidden="true">&#9636;</span><span class="lbl">Budget</span></button>
+  <button type="button" data-nav="bills"><span class="ico" aria-hidden="true">&#9776;</span><span class="lbl">Bills</span></button>
+  <button type="button" data-nav="debts"><span class="ico" aria-hidden="true">&#8595;</span><span class="lbl">Debts</span></button>
+  <button type="button" data-nav="goals"><span class="ico" aria-hidden="true">&#9734;</span><span class="lbl">Goals</span></button>
+  <button type="button" data-nav="networth"><span class="ico" aria-hidden="true">&#8721;</span><span class="lbl">Worth</span></button>
+  <button type="button" data-nav="settings"><span class="ico" aria-hidden="true">&#9881;</span><span class="lbl">Settings</span></button>
+</div></nav>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<div id="modal" hidden></div>
+
+<script src="./app.js"></script>
+</body>
+</html>
