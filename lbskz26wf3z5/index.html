@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en-AU" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; manifest-src 'self'; worker-src 'self'; font-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="description" content="A client book for nail techs, lash and brow artists and estheticians: client cards with patch tests and allergies in the client&#x27;s words, an appointment calendar, rebook reminders, services and prices, and your income by week or month. Works offline, no account, no subscription; your client details stay on your device.">
+<meta name="author" content="Jaz Sandhu">
+<meta name="generator" content="Holloway &amp; Hart 18Nov2026.3">
+<meta name="color-scheme" content="light dark">
+<title>Client Book · Holloway &amp; Hart</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Client Book">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#4E5A61" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#A9BAC4" media="(prefers-color-scheme: dark)">
+<style>
+:root { color-scheme: light; --bg: #F6F2EA; --card: #FFFDF9; --card-alt: #EFE8DC; --ink: #2F2B27; --muted: #8A8177; --line: #E2D9CB; --input: #FBF3E2; --input-border: #D9C7A6; --accent: #4E5A61; --on-accent: #FFFFFF; --highlight: #E8722B; --positive: #6E8B63; --soft: #F3D6C0; }
+:root[data-theme=dark] { color-scheme: dark; --bg: #181B1D; --card: #22272A; --card-alt: #2B3135; --ink: #EDE8E0; --muted: #9AA1A5; --line: #353B40; --input: #2E3539; --input-border: #56605F; --accent: #A9BAC4; --on-accent: #181B1D; --highlight: #F08A48; --positive: #9CC49A; --soft: #543A29; }
+@media (prefers-color-scheme: dark) { :root[data-theme=auto] { color-scheme: dark; --bg: #181B1D; --card: #22272A; --card-alt: #2B3135; --ink: #EDE8E0; --muted: #9AA1A5; --line: #353B40; --input: #2E3539; --input-border: #56605F; --accent: #A9BAC4; --on-accent: #181B1D; --highlight: #F08A48; --positive: #9CC49A; --soft: #543A29; } }
+/* Holloway & Hart app chassis (apps/core.css). Colours come from chassis/theme.py tokens (written above this by the build):
+   --bg --card --card-alt --ink --muted --line --input --input-border --accent --on-accent --highlight --positive --soft */
+*, *::before, *::after { box-sizing: border-box; }
+/* the hidden attribute always wins (8 Nov 2026: .btn's display: inline-flex showed the Delete button on a new Add spending
+   screen, and would on any element whose class sets a display) */
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 17px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, Calibri, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+}
+.serif, h1, h2, .hero-num { font-family: Georgia, "Times New Roman", serif; }
+h1 { font-size: 1.45rem; margin: 0 0 12px; line-height: 1.2; }
+h1:focus { outline: none; }
+h2 { font-size: 1.15rem; margin: 0 0 8px; }
+p { margin: 0 0 10px; }
+a { color: var(--accent); }
+.wrap { max-width: 620px; margin: 0 auto; padding: 0 16px 112px; }
+.topbar { background: var(--accent); color: var(--on-accent); }
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; min-height: 52px; gap: 12px; }
+.topbar .name { font-family: Georgia, "Times New Roman", serif; font-weight: bold; font-size: 1.05rem; }
+.topbar .mark { font-size: .7rem; letter-spacing: .14em; opacity: .9; white-space: nowrap; }
+main { padding-top: 16px; }
+.card { background: var(--card); border-radius: 14px; padding: 16px; margin: 0 0 14px; border-top: 3px solid var(--accent); }
+.card.flat { border-top-color: var(--line); }
+.muted { color: var(--muted); }
+.small { font-size: .9rem; }
+.hero { text-align: center; padding: 22px 16px 18px; }
+.hero .label { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
+.hero-num { font-size: clamp(2.6rem, 13vw, 4rem); font-weight: bold; line-height: 1.05; margin: 2px 0 8px; overflow-wrap: anywhere; }
+.hero .cap { font-size: 1.05rem; }
+.banner { border-radius: 12px; padding: 12px 14px; margin: 0 0 14px; background: var(--soft); border: 1px solid var(--line); }
+.banner strong { display: block; margin-bottom: 2px; }
+.banner .row-buttons { margin-top: 8px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 10px 18px;
+  border-radius: 12px; border: 2px solid transparent; font: inherit; font-weight: 600; cursor: pointer; text-decoration: none;
+  background: var(--card-alt); color: var(--ink);
+}
+.btn-primary { background: var(--accent); color: var(--on-accent); }
+.btn-big { width: 100%; min-height: 60px; font-size: 1.2rem; }
+.btn-quiet { background: transparent; border-color: var(--line); }
+.btn-danger { background: transparent; border-color: var(--ink); }
+.btn-link { background: none; border: 0; color: var(--accent); font: inherit; font-weight: 600; cursor: pointer; min-height: 44px; padding: 8px 4px; text-decoration: underline; }
+.row-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible, label.chip:focus-within {
+  outline: 3px solid var(--highlight); outline-offset: 2px;
+}
+label { display: block; font-weight: 600; margin: 12px 0 4px; }
+.hint { display: block; font-weight: normal; color: var(--muted); font-size: .9rem; }
+input[type=text], input[type=date], input[type=number], select {
+  width: 100%; min-height: 48px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--input);
+  border: 1.5px solid var(--input-border); border-radius: 10px;
+}
+input.big { font-size: 2rem; min-height: 64px; text-align: center; font-family: Georgia, "Times New Roman", serif; }
+.err { color: var(--ink); font-weight: 600; margin: 6px 0 0; }
+.err::before { content: "\2192  "; }
+.check { display: flex; align-items: center; gap: 10px; min-height: 48px; font-weight: 600; margin: 10px 0 0; }
+.check input { width: 24px; height: 24px; accent-color: var(--accent); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.chip { position: relative; margin: 0; font-weight: 500; }
+.chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chip span { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; border-radius: 22px; border: 1.5px solid var(--input-border); background: var(--input); cursor: pointer; }
+.chip input:checked + span { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.chip input:checked + span::before { content: "\2713  "; }
+.list { list-style: none; margin: 0; padding: 0; }
+.list li { border-top: 1px solid var(--line); padding: 10px 0; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.list li:first-child { border-top: 0; }
+.list .what { flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
+.list .amt { font-weight: 700; white-space: nowrap; }
+.tag { display: inline-block; font-size: .8rem; padding: 2px 8px; border-radius: 10px; background: var(--card-alt); margin-top: 3px; }
+.bar { height: 12px; border-radius: 6px; background: var(--card-alt); overflow: hidden; margin-top: 4px; }
+.bar > i { display: block; height: 100%; background: var(--highlight); }
+.stat { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.stat:first-of-type { border-top: 0; }
+.stat b { white-space: nowrap; }
+details summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
+nav.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom); z-index: 5;
+}
+nav.tabs .wrap { display: flex; padding: 0 8px; }
+nav.tabs button {
+  flex: 1 1 0; min-height: 60px; background: none; border: 0; color: var(--muted); font: inherit; font-size: .85rem;
+  font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+}
+nav.tabs button .ico { font-size: 1.25rem; line-height: 1; }
+nav.tabs button.on { color: var(--accent); }
+nav.tabs button.on .lbl { text-decoration: underline; text-underline-offset: 4px; }
+#toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 76px; z-index: 9; max-width: calc(100% - 32px);
+  background: var(--ink); color: var(--bg); border-radius: 12px; padding: 6px 8px 6px 16px; display: flex; gap: 12px; align-items: center;
+}
+#toast[hidden] { display: none; }
+#toast .btn-link { color: var(--bg); }
+#modal { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); z-index: 10; display: flex; align-items: center; justify-content: center; padding: 16px; }
+#modal[hidden] { display: none; }
+.modal-card { background: var(--card); color: var(--ink); border-radius: 14px; padding: 20px; max-width: 460px; width: 100%; }
+.steps { display: flex; gap: 6px; margin-bottom: 12px; }
+.steps i { flex: 1; height: 6px; border-radius: 3px; background: var(--card-alt); }
+.steps i.on { background: var(--accent); }
+.sample-flag { font-weight: 700; letter-spacing: .08em; }
+footer.foot { text-align: center; font-size: .8rem; color: var(--muted); margin: 24px 0 0; }
+@media (min-width: 900px) { body { font-size: 18px; } .wrap { max-width: 680px; } }
+@media (prefers-reduced-motion: no-preference) {
+  .btn, .chip span, nav.tabs button { transition: background-color .15s, color .15s; }
+}
+@media print { nav.tabs, #toast { display: none; } }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+fieldset.plain { border: 0; margin: 12px 0 0; padding: 0; min-width: 0; }
+fieldset.plain legend { font-weight: 600; padding: 0; margin-bottom: 4px; }
+.banner.slim { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 6px 8px 6px 14px; }
+.banner.slim .btn { min-height: 44px; padding: 6px 14px; }
+.rowbtn {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 10px 0; background: none; border: 0;
+  color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.list li.plain, .list li:has(> .rowbtn) { padding: 0; }
+.rowbtn .chev { font-size: 1.5rem; line-height: 1; color: var(--muted); padding-left: 2px; }
+/* 8 Nov 2026 (71 Christmas Gift Tracker): a 20-block progress bar, a 'done' tag, and textareas styled like the inputs */
+.blocks { display: inline-flex; gap: 2px; margin-top: 6px; }
+.blocks i { display: block; width: 9px; height: 10px; border-radius: 2px; background: var(--card-alt); }
+.blocks i.on { background: var(--highlight); }
+.tag.done { background: var(--soft); font-weight: 600; }
+textarea { width: 100%; min-height: 96px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--input); border: 1.5px solid var(--input-border); border-radius: 10px; resize: vertical; }
+.list li .btn { min-height: 44px; padding: 6px 14px; }
+/* 9 Nov 2026 (hosted build, Home Screen web apps): safe areas on phones with a notch or a home bar, and the install card */
+.wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+.topbar { padding-top: env(safe-area-inset-top); }
+.topbar .wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+nav.tabs .wrap { padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); }
+#toast { bottom: calc(76px + env(safe-area-inset-bottom)); }
+.banner.install { margin-top: 16px; }
+.banner.install ol { margin: 6px 0 4px 22px; padding: 0; }
+.banner.install li { margin: 3px 0; }
+.banner.install p { margin: 6px 0 0; }
+/* Product 141: Beauty Pro Client Book & Appointment App (apps/p141/app.css, 18 Nov 2026): the Today cards, the week and day
+   calendar, two-up form rows, the time / phone / email inputs styled like the chassis's, and a seven-tab bar */
+input[type=time], input[type=tel], input[type=email] {
+  width: 100%; min-height: 48px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--input);
+  border: 1.5px solid var(--input-border); border-radius: 10px;
+}
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.two > div { min-width: 0; }
+.cards2 { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 14px 0; }
+@media (min-width: 560px) { .cards2 { grid-template-columns: 1fr 1fr; } }
+.linkcard { text-align: left; font: inherit; color: inherit; cursor: pointer; margin: 0; width: 100%; display: block; position: relative; padding-bottom: 36px;
+  border: 0; border-top: 3px solid var(--accent); }
+.linkcard h2 { margin-bottom: 4px; }
+.linkcard p { margin: 0; }
+.linkcard .more { position: absolute; right: 16px; bottom: 12px; color: var(--accent); font-weight: 600; }
+.mini { list-style: none; margin: 4px 0 0; padding: 0; }
+.mini li { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; }
+.mini li span { min-width: 0; overflow-wrap: anywhere; }
+.navrow { margin: 12px 0 0; }
+.navrow .btn { flex: 1 1 0; min-width: 0; padding: 10px 8px; }
+.day { border-top: 1px solid var(--line); padding: 4px 0 6px; }
+.day:first-child { border-top: 0; }
+.day .rowbtn.dayhead { min-height: 48px; padding: 6px 0; font-weight: 700; justify-content: space-between; }
+.day.today .dayhead .dn { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+.day .free { color: var(--muted); font-size: .9rem; padding: 0 0 6px; margin: 0; }
+.calbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.calbar .chips { margin-top: 0; }
+.appt { display: flex; align-items: center; gap: 4px; border-left: 4px solid var(--accent); background: var(--card-alt); border-radius: 10px; margin: 0 0 6px; }
+.appt .rowbtn { flex: 1 1 auto; min-width: 0; padding: 8px 10px; min-height: 52px; }
+.appt > .btn { flex: 0 0 auto; margin-right: 8px; }
+.appt .what { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.list li > .appt { flex: 1 1 100%; margin: 0; }
+#today-list li { border-top: 0; padding: 0 0 6px; }
+.appt.st-done { border-left-color: var(--highlight); }
+.appt.st-cancelled, .appt.st-noshow { border-left-color: var(--line); }
+.appt.st-cancelled .what b, .appt.st-noshow .what b { text-decoration: line-through; text-decoration-color: var(--muted); }
+.appt .time { font-weight: 700; white-space: nowrap; min-width: 4.6em; }
+.hour { display: grid; grid-template-columns: 4.4em 1fr; gap: 8px; border-top: 1px solid var(--line); padding: 6px 0; min-height: 44px; }
+.hour:first-child { border-top: 0; }
+.hour .h { color: var(--muted); font-size: .85rem; font-weight: 600; padding-top: 4px; white-space: nowrap; }
+.hour .slot { min-width: 0; }
+.hour .appt:last-child { margin-bottom: 0; }
+.tag.st-done { background: var(--soft); font-weight: 600; }
+.tag.st-booked { background: var(--card-alt); border: 1px solid var(--line); }
+.tag.st-cancelled, .tag.st-noshow { background: transparent; border: 1px dashed var(--muted); }
+.note { background: var(--soft); border-radius: 10px; padding: 8px 12px; margin: 10px 0 0; }
+.quote { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+.visit-notes { display: block; margin-top: 2px; overflow-wrap: anywhere; }
+.list li .row-buttons { flex: 0 0 auto; }
+.client-row .tag { margin-right: 4px; }
+.contact .stat span:last-child, .contact .stat b { overflow-wrap: anywhere; min-width: 0; text-align: right; }
+nav.tabs button { font-size: .7rem; min-width: 0; padding: 0 1px; }
+nav.tabs button .ico { font-size: 1.1rem; }
+nav.tabs button .lbl { max-width: 100%; overflow: hidden; text-overflow: clip; white-space: nowrap; }
+@media (max-width: 559px) { #today-list .appt .rowbtn { flex-wrap: wrap; row-gap: 2px; } #today-list .appt .time { flex: 1 1 100%; } }
+@media (max-width: 374px) { nav.tabs button { font-size: .64rem; } nav.tabs .wrap { padding: 0 4px; } }
+@media (min-width: 560px) { nav.tabs button { font-size: .85rem; } }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><span class="name">Client Book</span><span class="mark">HOLLOWAY &amp; HART</span></div></header>
+<div class="wrap">
+<main id="main">
+  <div id="banners"></div>
+
+  <section data-screen="welcome" hidden>
+    <div class="steps" aria-hidden="true"><i id="st1"></i><i id="st2"></i><i id="st3"></i></div>
+    <div id="welcome-1">
+      <h1>Hi. Let's set up your client book.</h1>
+      <p>Three quick steps, then your day: who's coming in, who's due back, and what you've taken this week.</p>
+      <form id="w-setup" class="card" novalidate>
+        <fieldset class="plain"><legend>Your work <span class="hint">Picks the note fields for each visit. You can change it later.</span></legend>
+          <div class="chips" role="radiogroup" aria-label="Your work" id="w-biz"></div>
+        </fieldset>
+        <fieldset class="plain"><legend>Currency</legend>
+          <div class="chips" role="radiogroup" aria-label="Currency" id="w-cur"></div>
+        </fieldset>
+        <div id="w-cur-own-wrap" hidden><label for="w-cur-own">Your symbol <span class="hint">Up to 4 characters, such as NZ$</span></label>
+          <input id="w-cur-own" type="text" maxlength="4" autocomplete="off"></div>
+        <fieldset class="plain"><legend>Your week starts on</legend>
+          <div class="chips" role="radiogroup" aria-label="Week start" id="w-ws"></div>
+        </fieldset>
+        <p class="err" id="w-err" hidden></p>
+        <div class="row-buttons" style="margin-top:14px"><button class="btn btn-primary" type="submit" id="w-next1">Next</button></div>
+      </form>
+      <div class="card flat">
+        <h2>Just looking?</h2>
+        <p>See the app filled in with made-up clients first: appointments, client cards, rebook reminders and income. One tap clears them.</p>
+        <button type="button" class="btn btn-quiet" id="w-sample">Try it with sample data first</button>
+      </div>
+    </div>
+    <div id="welcome-2" hidden>
+      <h1>Now your services</h1>
+      <p>What you offer, the price, how long it takes and when clients usually come back. You can skip this and add them later under Services.</p>
+      <div class="card"><ul class="list" id="w-svc-list"></ul><p class="muted small" id="w-svc-none">No services yet.</p></div>
+      <div class="row-buttons">
+        <button type="button" class="btn btn-primary" id="w-svc-add">+ Add a service</button>
+        <button type="button" class="btn btn-quiet" id="w-svc-done">Done</button>
+      </div>
+      <p><button type="button" class="btn-link" id="w-svc-skip">Skip for now</button></p>
+    </div>
+    <div id="welcome-3" hidden>
+      <h1>You're set</h1>
+      <div class="card">
+        <p>Tap <b>+ New appointment</b> to book someone in. A new client can be added right there, by name.</p>
+        <p>When an appointment is done, tap <b>Done</b>: it goes into your income, and the client shows under <b>Rebook</b> when they're due back.</p>
+        <p class="muted small" style="margin:0">Client details stay on this device. Back them up now and then from Settings.</p>
+      </div>
+      <button type="button" class="btn btn-primary btn-big" id="w-finish">Show my day</button>
+    </div>
+  </section>
+
+  <section data-screen="home" hidden>
+    <h1 class="sr">Today</h1>
+    <div class="card hero" id="hero">
+      <div class="label" id="today-label">Today</div>
+      <div class="hero-num" id="today-count"></div>
+      <div class="cap" id="today-cap"></div>
+    </div>
+    <button type="button" class="btn btn-primary btn-big" id="new-appt-btn">+ New appointment</button>
+    <div class="card" style="margin-top:14px">
+      <h2>Today's appointments</h2>
+      <ul class="list" id="today-list"></ul>
+      <p class="muted small" id="today-none">Nothing booked today.</p>
+    </div>
+    <div class="cards2">
+      <button type="button" class="card linkcard" id="hc-rebook" data-go="rebook"><h2>Due to rebook</h2><p id="hc-rebook-line"></p><ul class="mini" id="hc-rebook-list"></ul><span class="more">Open ›</span></button>
+      <button type="button" class="card linkcard" id="hc-income" data-go="income"><h2>This week's income</h2><p id="hc-income-line"></p><ul class="mini" id="hc-income-list"></ul><span class="more">Open ›</span></button>
+      <button type="button" class="card linkcard" id="hc-patch" data-go="clients"><h2>Patch tests due</h2><p id="hc-patch-line"></p><ul class="mini" id="hc-patch-list"></ul><span class="more">Open ›</span></button>
+      <button type="button" class="card linkcard" id="hc-bday" data-go="clients"><h2>Birthdays</h2><p id="hc-bday-line"></p><ul class="mini" id="hc-bday-list"></ul><span class="more">Open ›</span></button>
+    </div>
+  </section>
+
+  <section data-screen="calendar" hidden>
+    <h1>Calendar</h1>
+    <div class="calbar">
+      <div class="chips" role="radiogroup" aria-label="Calendar view">
+        <label class="chip"><input type="radio" name="calmode" value="week"><span>Week</span></label>
+        <label class="chip"><input type="radio" name="calmode" value="day"><span>Day</span></label>
+      </div>
+      <button type="button" class="btn btn-primary" id="cal-add" aria-label="New appointment">+ New</button>
+    </div>
+    <div class="row-buttons navrow">
+      <button type="button" class="btn btn-quiet" id="cal-prev">‹ Earlier</button>
+      <button type="button" class="btn btn-quiet" id="cal-today">Today</button>
+      <button type="button" class="btn btn-quiet" id="cal-next">Later ›</button>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h2 id="cal-title"></h2>
+      <p class="small muted" id="cal-summary"></p>
+      <div id="cal-week"></div>
+      <div id="cal-day" hidden></div>
+    </div>
+    <div class="card flat"><label for="cal-date" style="margin-top:0">Go to a date</label><input id="cal-date" type="date"></div>
+  </section>
+
+  <section data-screen="appt" hidden>
+    <h1 id="ap-title">New appointment</h1>
+    <form id="ap-form" class="card" novalidate>
+      <label for="ap-client">Client</label>
+      <select id="ap-client"></select>
+      <div id="ap-client-new-wrap" hidden><label for="ap-client-new">New client's name</label>
+        <input id="ap-client-new" type="text" maxlength="40" autocomplete="off" placeholder="First name and an initial"></div>
+      <label for="ap-service">Service</label>
+      <select id="ap-service"></select>
+      <div id="ap-service-other-wrap" hidden><label for="ap-service-other">What's it for?</label>
+        <input id="ap-service-other" type="text" maxlength="40" autocomplete="off"></div>
+      <div class="two">
+        <div><label for="ap-date">Day</label><input id="ap-date" type="date"></div>
+        <div><label for="ap-time">Start time</label><input id="ap-time" type="time" step="300"></div>
+      </div>
+      <div class="two">
+        <div><label for="ap-minutes">Minutes</label><input id="ap-minutes" type="text" inputmode="numeric" autocomplete="off"></div>
+        <div><label for="ap-price">Price</label><input id="ap-price" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00"></div>
+      </div>
+      <p class="small note" id="ap-overlap" hidden></p>
+      <fieldset class="plain"><legend>Status</legend>
+        <div class="chips" role="radiogroup" aria-label="Status" id="ap-status"></div>
+      </fieldset>
+      <p class="small" id="ap-rebook-line" hidden></p>
+      <label for="ap-tip">Tip <span class="hint">Optional. Counts in Income once the appointment is Done.</span></label>
+      <input id="ap-tip" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+      <h2 style="margin-top:18px">Service notes for this visit</h2>
+      <p class="small muted" style="margin:0">Optional. They show on the client's card under this visit.</p>
+      <div id="ap-notes"></div>
+      <p class="err" id="ap-err" hidden></p>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary" type="submit" id="ap-save">Save appointment</button>
+        <button type="button" class="btn btn-quiet" id="ap-cancel">Back</button>
+        <button type="button" class="btn btn-danger" id="ap-delete" hidden>Delete</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="clients" hidden>
+    <h1>Clients</h1>
+    <p class="muted">Everyone you see, with their contact details, what they've told you, patch tests and every visit. Tap a client to open their card.</p>
+    <button type="button" class="btn btn-primary" id="client-add">+ Add a client</button>
+    <label for="cl-search">Find a client <span class="hint">By name or phone</span></label>
+    <input id="cl-search" type="text" autocomplete="off">
+    <div class="card" style="margin-top:14px"><ul class="list" id="client-list"></ul><p class="muted small" id="client-none">No clients yet.</p></div>
+  </section>
+
+  <section data-screen="client" hidden>
+    <h1 id="cv-name"></h1>
+    <div class="row-buttons">
+      <button type="button" class="btn btn-primary" id="cv-book">Book an appointment</button>
+      <button type="button" class="btn btn-quiet" id="cv-edit">Change details</button>
+    </div>
+    <div class="card" style="margin-top:14px"><h2>Contact</h2><div id="cv-contact"></div></div>
+    <div class="card" id="cv-allergy-card"><h2>Allergies and sensitivities</h2>
+      <p class="small muted" style="margin-bottom:4px">As the client told you</p>
+      <p id="cv-allergies"></p></div>
+    <div class="card"><h2>Patch tests</h2><ul class="list" id="cv-patch-list"></ul><p class="muted small" id="cv-patch-none">No patch tests noted.</p>
+      <button type="button" class="btn btn-quiet" id="cv-patch-add">+ Add a patch test</button></div>
+    <div class="card flat"><h2>Rebook</h2><p id="cv-rebook"></p></div>
+    <div class="card"><h2>Visits</h2><ul class="list" id="cv-visits"></ul><p class="muted small" id="cv-visits-none">No appointments yet.</p></div>
+    <button type="button" class="btn btn-quiet" id="cv-back">Back to Clients</button>
+  </section>
+
+  <section data-screen="client-edit" hidden>
+    <h1 id="c-title">Add a client</h1>
+    <form id="client-form" class="card" novalidate>
+      <label for="c-name">Name</label>
+      <input id="c-name" type="text" maxlength="40" autocomplete="off" placeholder="First name and an initial">
+      <label for="c-phone">Phone <span class="hint">Optional</span></label>
+      <input id="c-phone" type="tel" maxlength="30" autocomplete="off">
+      <label for="c-email">Email <span class="hint">Optional</span></label>
+      <input id="c-email" type="email" maxlength="80" autocomplete="off">
+      <fieldset class="plain"><legend>Birthday <span class="hint">Optional. Day and month only.</span></legend>
+        <div class="two">
+          <div><label for="c-bday-day" class="sr">Day</label><select id="c-bday-day"></select></div>
+          <div><label for="c-bday-month" class="sr">Month</label><select id="c-bday-month"></select></div>
+        </div>
+      </fieldset>
+      <label for="c-allergies">Allergies and sensitivities <span class="hint">What the client tells you, in their words. The app keeps it exactly as you type it.</span></label>
+      <textarea id="c-allergies" maxlength="600" rows="3"></textarea>
+      <label for="c-notes">Notes <span class="hint">Anything else worth remembering</span></label>
+      <textarea id="c-notes" maxlength="600" rows="3"></textarea>
+      <p class="err" id="c-err" hidden></p>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary" type="submit" id="c-save">Save client</button>
+        <button type="button" class="btn btn-quiet" id="c-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="c-delete" hidden>Delete client</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="patch-edit" hidden>
+    <h1 id="pt-title">Add a patch test</h1>
+    <form id="patch-form" class="card" novalidate>
+      <label for="pt-date">Date of the test</label>
+      <input id="pt-date" type="date">
+      <label for="pt-product">Product or area</label>
+      <input id="pt-product" type="text" maxlength="60" autocomplete="off" placeholder="Lash glue, behind the ear">
+      <label for="pt-result">Result <span class="hint">Your note, such as what you saw at 48 hours</span></label>
+      <input id="pt-result" type="text" maxlength="120" autocomplete="off">
+      <label for="pt-next">Next due <span class="hint">Optional. When to patch test again, if you do.</span></label>
+      <input id="pt-next" type="date">
+      <p class="err" id="pt-err" hidden></p>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary" type="submit" id="pt-save">Save patch test</button>
+        <button type="button" class="btn btn-quiet" id="pt-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="pt-delete" hidden>Delete</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="rebook" hidden>
+    <h1>Due to rebook</h1>
+    <p class="muted">Clients due back in the next two weeks, or already due, going by their last visit and how often that service is usually rebooked. Clients with a booking from today on aren't listed.</p>
+    <div class="card"><ul class="list" id="rb-list"></ul><p class="muted small" id="rb-none">Nobody is due back in the next two weeks.</p>
+      <p class="small muted" id="rb-later" hidden></p></div>
+    <div class="card flat"><h2>How it's worked out</h2>
+      <p class="small" style="margin:0">Due back = the day of the client's last done appointment + the service's rebook weeks (set under Services). No-shows and cancellations don't count as a visit.</p></div>
+  </section>
+
+  <section data-screen="income" hidden>
+    <h1>Income</h1>
+    <div class="chips" role="radiogroup" aria-label="Income period">
+      <label class="chip"><input type="radio" name="incmode" value="week"><span>Week</span></label>
+      <label class="chip"><input type="radio" name="incmode" value="month"><span>Month</span></label>
+    </div>
+    <div class="row-buttons navrow">
+      <button type="button" class="btn btn-quiet" id="inc-prev">‹ Earlier</button>
+      <button type="button" class="btn btn-quiet" id="inc-now">Now</button>
+      <button type="button" class="btn btn-quiet" id="inc-next">Later ›</button>
+    </div>
+    <div class="card hero" style="margin-top:14px">
+      <div class="label" id="inc-title"></div>
+      <div class="hero-num" id="inc-total"></div>
+      <div class="stat"><span>Services <span class="small muted" id="inc-done"></span></span><b id="inc-services"></b></div>
+      <div class="stat"><span>Tips</span><b id="inc-tips"></b></div>
+      <div class="stat"><span>Product sales</span><b id="inc-products"></b></div>
+      <p class="small muted" id="inc-counts" style="margin:8px 0 0"></p>
+    </div>
+    <button type="button" class="btn btn-primary" id="sale-add">+ Add a sale or tip</button>
+    <div class="card" style="margin-top:14px"><h2 id="inc-list-head">This week</h2><ul class="list" id="inc-list"></ul><p class="muted small" id="inc-none">Nothing in this week yet.</p></div>
+    <div class="card flat"><h2 id="inc-hist-head">Week by week</h2><ul class="list" id="inc-history"></ul></div>
+  </section>
+
+  <section data-screen="sale-edit" hidden>
+    <h1 id="sl-title">Add a sale or tip</h1>
+    <form id="sale-form" class="card" novalidate>
+      <fieldset class="plain"><legend>What is it?</legend>
+        <div class="chips" role="radiogroup" aria-label="Kind">
+          <label class="chip"><input type="radio" name="slkind" value="Product sale"><span>Product sale</span></label>
+          <label class="chip"><input type="radio" name="slkind" value="Tip"><span>Tip</span></label>
+        </div>
+      </fieldset>
+      <label for="sl-amount">How much?</label>
+      <input id="sl-amount" class="big" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+      <label for="sl-note">Note <span class="hint">Optional, such as what was sold</span></label>
+      <input id="sl-note" type="text" maxlength="60" autocomplete="off">
+      <label for="sl-client">Client <span class="hint">Optional</span></label>
+      <select id="sl-client"></select>
+      <label for="sl-date">Day</label>
+      <input id="sl-date" type="date">
+      <p class="err" id="sl-err" hidden></p>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary" type="submit" id="sl-save">Save</button>
+        <button type="button" class="btn btn-quiet" id="sl-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="sl-delete" hidden>Delete</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="services" hidden>
+    <h1>Services</h1>
+    <p class="muted">What you offer, the price, how long it takes, and how many weeks until a client is usually due back. Tap a service to change it.</p>
+    <button type="button" class="btn btn-primary" id="svc-add">+ Add a service</button>
+    <div class="card" style="margin-top:14px"><ul class="list" id="svc-list"></ul><p class="muted small" id="svc-none">No services yet.</p></div>
+  </section>
+
+  <section data-screen="svc-edit" hidden>
+    <h1 id="sv-title">Add a service</h1>
+    <form id="svc-form" class="card" novalidate>
+      <label for="sv-name">Service</label>
+      <input id="sv-name" type="text" maxlength="40" autocomplete="off" placeholder="Gel nails">
+      <label for="sv-price">Price</label>
+      <input id="sv-price" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+      <label for="sv-minutes">Length in minutes</label>
+      <input id="sv-minutes" type="text" inputmode="numeric" autocomplete="off" placeholder="60">
+      <label for="sv-rebook">Rebook every … weeks <span class="hint">Blank or 0: no rebook reminder</span></label>
+      <input id="sv-rebook" type="text" inputmode="numeric" autocomplete="off" placeholder="3">
+      <p class="err" id="sv-err" hidden></p>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary" type="submit" id="sv-save">Save service</button>
+        <button type="button" class="btn btn-quiet" id="sv-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="sv-delete" hidden>Delete</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="settings" hidden>
+    <h1>Settings</h1>
+    <div class="card">
+      <h2>Your work</h2>
+      <p class="small muted">Picks the note fields on each appointment. Notes you've already saved keep their own fields.</p>
+      <div class="chips" role="radiogroup" aria-label="Your work" id="s-biz"></div>
+      <p class="small" id="s-biz-fields" style="margin:10px 0 0"></p>
+    </div>
+    <div class="card">
+      <h2>Money and time</h2>
+      <fieldset class="plain" style="margin-top:0"><legend>Currency</legend>
+        <div class="chips" role="radiogroup" aria-label="Currency" id="s-cur"></div>
+      </fieldset>
+      <div id="s-cur-own-wrap" hidden><label for="s-cur-own">Your symbol <span class="hint">Up to 4 characters, such as NZ$</span></label>
+        <input id="s-cur-own" type="text" maxlength="4" autocomplete="off"></div>
+      <fieldset class="plain"><legend>Week starts on</legend>
+        <div class="chips" role="radiogroup" aria-label="Week start" id="s-ws"></div>
+      </fieldset>
+      <fieldset class="plain"><legend>Clock</legend>
+        <div class="chips" role="radiogroup" aria-label="Clock" id="s-clock"></div>
+      </fieldset>
+      <p class="muted small" id="s-saved" aria-live="polite" style="margin:10px 0 0"></p>
+    </div>
+    <div class="card flat">
+      <h2>Look</h2>
+      <div class="chips" role="radiogroup" aria-label="Theme">
+        <label class="chip"><input type="radio" name="theme" value="auto"><span>Follow my device</span></label>
+        <label class="chip"><input type="radio" name="theme" value="light"><span>Light</span></label>
+        <label class="chip"><input type="radio" name="theme" value="dark"><span>Dark</span></label>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Backup</h2>
+      <p>Your client book stays in this browser on this device. A backup is a small file with everything in it, so you can get it back if the browser's data is cleared or you change devices. It holds your clients' details: keep it somewhere private.</p>
+      <p class="muted small" id="last-backup"></p>
+      <div class="row-buttons">
+        <button type="button" class="btn btn-primary" id="backup-btn">Back up now</button>
+        <label class="btn btn-quiet" for="restore-file" style="margin:0">Restore a backup</label>
+        <input id="restore-file" type="file" accept=".json,application/json" hidden>
+      </div>
+      <div id="restore-msg" aria-live="polite"></div>
+    </div>
+    <div class="card flat">
+      <h2>Sample data</h2>
+      <p id="sample-state"></p>
+      <button type="button" class="btn btn-quiet" id="sample-btn"></button>
+    </div>
+    <div class="card flat">
+      <h2>Start fresh</h2>
+      <p>Deletes everything in the app from this browser. Back up first if you might want it again.</p>
+      <button type="button" class="btn btn-danger" id="fresh-btn">Start fresh</button>
+    </div>
+    <div class="card flat">
+      <h2>Help</h2>
+      <p>Where your client book is kept, backups, a new device, and how rebook dates, patch tests and income are worked out.</p>
+      <button type="button" class="btn btn-quiet" id="help-btn">Open Help</button>
+    </div>
+    <p class="muted small" id="app-version" aria-live="polite"></p>
+    <footer class="foot">Client Book · version 1 · HOLLOWAY &amp; HART · Digital downloads that do what they say · Made in Melbourne</footer>
+  </section>
+
+  <section data-screen="help" hidden>
+    <h1>Help</h1>
+    <div class="card"><h2>Where your client book is kept</h2>
+      <p>Everything you type stays in this browser on this device. Nothing is sent anywhere, and the app works with no internet. There is no account and no subscription.</p></div>
+    <div class="card"><h2>Keep client details private</h2>
+      <p>Your clients trust you with their phone numbers, birthdays and what they tell you about allergies. Keep this device locked, and keep backup files somewhere only you can open them.</p>
+      <p>The app keeps what you type, exactly as you type it. It doesn't check, judge or suggest anything about a client.</p></div>
+    <div class="card"><h2>Keep a backup</h2>
+      <p>Settings → Back up now saves a small .json file. Do it every few weeks. The app reminds you if it has been 30 days.</p>
+      <p>If you clear your browser's history or site data, the app's information goes with it. A backup brings it back: Settings → Restore a backup.</p></div>
+    <div class="card"><h2>Open it the same way each time</h2>
+      <p>Each browser keeps its own copy. If you open the app in two different browsers, you get two separate client books. Pick one and stick with it. Restore your backup if the app ever opens empty.</p></div>
+    <div class="card"><h2>A new phone or computer</h2>
+      <p>On the old device: Settings → Back up now. Open the app on the new device, then Settings → Restore a backup.</p></div>
+    <div class="card"><h2>How the app works things out</h2>
+      <p><b>Rebook:</b> due back = the day of the client's last done appointment + that service's rebook weeks. Clients with a booking from today on aren't listed. No-shows and cancellations don't count as a visit.</p>
+      <p><b>Patch tests:</b> the latest test for each product or area, when its next-due date is within two weeks or has passed.</p>
+      <p><b>Income:</b> done appointments (their price), tips, and the product sales you log, by week or month. Booked, no-show and cancelled appointments count nothing.</p>
+      <p class="muted small" style="margin:0">Overlapping appointments get a note, never a block: you know your day best.</p></div>
+    <button type="button" class="btn btn-quiet" id="help-back">Back to Settings</button>
+  </section>
+</main>
+</div>
+<nav class="tabs" id="tabs" aria-label="Screens"><div class="wrap">
+  <button type="button" data-nav="home"><span class="ico" aria-hidden="true">&#9679;</span><span class="lbl">Today</span></button>
+  <button type="button" data-nav="calendar"><span class="ico" aria-hidden="true">&#9636;</span><span class="lbl">Calendar</span></button>
+  <button type="button" data-nav="clients"><span class="ico" aria-hidden="true">&#9786;</span><span class="lbl">Clients</span></button>
+  <button type="button" data-nav="rebook"><span class="ico" aria-hidden="true">&#8635;</span><span class="lbl">Rebook</span></button>
+  <button type="button" data-nav="income"><span class="ico" aria-hidden="true">&#8721;</span><span class="lbl">Income</span></button>
+  <button type="button" data-nav="services"><span class="ico" aria-hidden="true">&#9776;</span><span class="lbl">Services</span></button>
+  <button type="button" data-nav="settings"><span class="ico" aria-hidden="true">&#9881;</span><span class="lbl">Settings</span></button>
+</div></nav>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<div id="modal" hidden></div>
+
+<script src="./app.js"></script>
+</body>
+</html>
