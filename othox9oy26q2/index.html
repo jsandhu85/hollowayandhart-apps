@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en-AU" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; manifest-src 'self'; worker-src 'self'; font-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="description" content="Small business bookkeeping in one app: income and expenses by category with receipt notes, GST and BAS quarters (or sales tax or VAT), profit and loss by month and year, a mileage log and CSV export. Works offline, no account, no subscription; your information stays on your device.">
+<meta name="author" content="Jaz Sandhu">
+<meta name="generator" content="Holloway &amp; Hart 18Nov2026.6">
+<meta name="color-scheme" content="light dark">
+<title>Bookkeeping · Holloway &amp; Hart</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bookkeeping">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#4E5A61" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#A9BAC4" media="(prefers-color-scheme: dark)">
+<style>
+:root { color-scheme: light; --bg: #F6F2EA; --card: #FFFDF9; --card-alt: #EFE8DC; --ink: #2F2B27; --muted: #8A8177; --line: #E2D9CB; --input: #FBF3E2; --input-border: #D9C7A6; --accent: #4E5A61; --on-accent: #FFFFFF; --highlight: #E8722B; --positive: #6E8B63; --soft: #F3D6C0; }
+:root[data-theme=dark] { color-scheme: dark; --bg: #181B1D; --card: #22272A; --card-alt: #2B3135; --ink: #EDE8E0; --muted: #9AA1A5; --line: #353B40; --input: #2E3539; --input-border: #56605F; --accent: #A9BAC4; --on-accent: #181B1D; --highlight: #F08A48; --positive: #9CC49A; --soft: #543A29; }
+@media (prefers-color-scheme: dark) { :root[data-theme=auto] { color-scheme: dark; --bg: #181B1D; --card: #22272A; --card-alt: #2B3135; --ink: #EDE8E0; --muted: #9AA1A5; --line: #353B40; --input: #2E3539; --input-border: #56605F; --accent: #A9BAC4; --on-accent: #181B1D; --highlight: #F08A48; --positive: #9CC49A; --soft: #543A29; } }
+/* Holloway & Hart app chassis (apps/core.css). Colours come from chassis/theme.py tokens (written above this by the build):
+   --bg --card --card-alt --ink --muted --line --input --input-border --accent --on-accent --highlight --positive --soft */
+*, *::before, *::after { box-sizing: border-box; }
+/* the hidden attribute always wins (8 Nov 2026: .btn's display: inline-flex showed the Delete button on a new Add spending
+   screen, and would on any element whose class sets a display) */
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 17px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, Calibri, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+}
+.serif, h1, h2, .hero-num { font-family: Georgia, "Times New Roman", serif; }
+h1 { font-size: 1.45rem; margin: 0 0 12px; line-height: 1.2; }
+h1:focus { outline: none; }
+h2 { font-size: 1.15rem; margin: 0 0 8px; }
+p { margin: 0 0 10px; }
+a { color: var(--accent); }
+.wrap { max-width: 620px; margin: 0 auto; padding: 0 16px 112px; }
+.topbar { background: var(--accent); color: var(--on-accent); }
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; min-height: 52px; gap: 12px; }
+.topbar .name { font-family: Georgia, "Times New Roman", serif; font-weight: bold; font-size: 1.05rem; }
+.topbar .mark { font-size: .7rem; letter-spacing: .14em; opacity: .9; white-space: nowrap; }
+main { padding-top: 16px; }
+.card { background: var(--card); border-radius: 14px; padding: 16px; margin: 0 0 14px; border-top: 3px solid var(--accent); }
+.card.flat { border-top-color: var(--line); }
+.muted { color: var(--muted); }
+.small { font-size: .9rem; }
+.hero { text-align: center; padding: 22px 16px 18px; }
+.hero .label { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
+.hero-num { font-size: clamp(2.6rem, 13vw, 4rem); font-weight: bold; line-height: 1.05; margin: 2px 0 8px; overflow-wrap: anywhere; }
+.hero .cap { font-size: 1.05rem; }
+.banner { border-radius: 12px; padding: 12px 14px; margin: 0 0 14px; background: var(--soft); border: 1px solid var(--line); }
+.banner strong { display: block; margin-bottom: 2px; }
+.banner .row-buttons { margin-top: 8px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 10px 18px;
+  border-radius: 12px; border: 2px solid transparent; font: inherit; font-weight: 600; cursor: pointer; text-decoration: none;
+  background: var(--card-alt); color: var(--ink);
+}
+.btn-primary { background: var(--accent); color: var(--on-accent); }
+.btn-big { width: 100%; min-height: 60px; font-size: 1.2rem; }
+.btn-quiet { background: transparent; border-color: var(--line); }
+.btn-danger { background: transparent; border-color: var(--ink); }
+.btn-link { background: none; border: 0; color: var(--accent); font: inherit; font-weight: 600; cursor: pointer; min-height: 44px; padding: 8px 4px; text-decoration: underline; }
+.row-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible, label.chip:focus-within {
+  outline: 3px solid var(--highlight); outline-offset: 2px;
+}
+label { display: block; font-weight: 600; margin: 12px 0 4px; }
+.hint { display: block; font-weight: normal; color: var(--muted); font-size: .9rem; }
+input[type=text], input[type=date], input[type=number], select {
+  width: 100%; min-height: 48px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--input);
+  border: 1.5px solid var(--input-border); border-radius: 10px;
+}
+input.big { font-size: 2rem; min-height: 64px; text-align: center; font-family: Georgia, "Times New Roman", serif; }
+.err { color: var(--ink); font-weight: 600; margin: 6px 0 0; }
+.err::before { content: "\2192  "; }
+.check { display: flex; align-items: center; gap: 10px; min-height: 48px; font-weight: 600; margin: 10px 0 0; }
+.check input { width: 24px; height: 24px; accent-color: var(--accent); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.chip { position: relative; margin: 0; font-weight: 500; }
+.chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chip span { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; border-radius: 22px; border: 1.5px solid var(--input-border); background: var(--input); cursor: pointer; }
+.chip input:checked + span { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.chip input:checked + span::before { content: "\2713  "; }
+.list { list-style: none; margin: 0; padding: 0; }
+.list li { border-top: 1px solid var(--line); padding: 10px 0; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.list li:first-child { border-top: 0; }
+.list .what { flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
+.list .amt { font-weight: 700; white-space: nowrap; }
+.tag { display: inline-block; font-size: .8rem; padding: 2px 8px; border-radius: 10px; background: var(--card-alt); margin-top: 3px; }
+.bar { height: 12px; border-radius: 6px; background: var(--card-alt); overflow: hidden; margin-top: 4px; }
+.bar > i { display: block; height: 100%; background: var(--highlight); }
+.stat { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.stat:first-of-type { border-top: 0; }
+.stat b { white-space: nowrap; }
+details summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
+nav.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom); z-index: 5;
+}
+nav.tabs .wrap { display: flex; padding: 0 8px; }
+nav.tabs button {
+  flex: 1 1 0; min-height: 60px; background: none; border: 0; color: var(--muted); font: inherit; font-size: .85rem;
+  font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+}
+nav.tabs button .ico { font-size: 1.25rem; line-height: 1; }
+nav.tabs button.on { color: var(--accent); }
+nav.tabs button.on .lbl { text-decoration: underline; text-underline-offset: 4px; }
+#toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 76px; z-index: 9; max-width: calc(100% - 32px);
+  background: var(--ink); color: var(--bg); border-radius: 12px; padding: 6px 8px 6px 16px; display: flex; gap: 12px; align-items: center;
+}
+#toast[hidden] { display: none; }
+#toast .btn-link { color: var(--bg); }
+#modal { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); z-index: 10; display: flex; align-items: center; justify-content: center; padding: 16px; }
+#modal[hidden] { display: none; }
+.modal-card { background: var(--card); color: var(--ink); border-radius: 14px; padding: 20px; max-width: 460px; width: 100%; }
+.steps { display: flex; gap: 6px; margin-bottom: 12px; }
+.steps i { flex: 1; height: 6px; border-radius: 3px; background: var(--card-alt); }
+.steps i.on { background: var(--accent); }
+.sample-flag { font-weight: 700; letter-spacing: .08em; }
+footer.foot { text-align: center; font-size: .8rem; color: var(--muted); margin: 24px 0 0; }
+@media (min-width: 900px) { body { font-size: 18px; } .wrap { max-width: 680px; } }
+@media (prefers-reduced-motion: no-preference) {
+  .btn, .chip span, nav.tabs button { transition: background-color .15s, color .15s; }
+}
+@media print { nav.tabs, #toast { display: none; } }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+fieldset.plain { border: 0; margin: 12px 0 0; padding: 0; min-width: 0; }
+fieldset.plain legend { font-weight: 600; padding: 0; margin-bottom: 4px; }
+.banner.slim { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 6px 8px 6px 14px; }
+.banner.slim .btn { min-height: 44px; padding: 6px 14px; }
+.rowbtn {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 10px 0; background: none; border: 0;
+  color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.list li.plain, .list li:has(> .rowbtn) { padding: 0; }
+.rowbtn .chev { font-size: 1.5rem; line-height: 1; color: var(--muted); padding-left: 2px; }
+/* 8 Nov 2026 (71 Christmas Gift Tracker): a 20-block progress bar, a 'done' tag, and textareas styled like the inputs */
+.blocks { display: inline-flex; gap: 2px; margin-top: 6px; }
+.blocks i { display: block; width: 9px; height: 10px; border-radius: 2px; background: var(--card-alt); }
+.blocks i.on { background: var(--highlight); }
+.tag.done { background: var(--soft); font-weight: 600; }
+textarea { width: 100%; min-height: 96px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--input); border: 1.5px solid var(--input-border); border-radius: 10px; resize: vertical; }
+.list li .btn { min-height: 44px; padding: 6px 14px; }
+/* 9 Nov 2026 (hosted build, Home Screen web apps): safe areas on phones with a notch or a home bar, and the install card */
+.wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+.topbar { padding-top: env(safe-area-inset-top); }
+.topbar .wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+nav.tabs .wrap { padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); }
+#toast { bottom: calc(76px + env(safe-area-inset-bottom)); }
+.banner.install { margin-top: 16px; }
+.banner.install ol { margin: 6px 0 4px 22px; padding: 0; }
+.banner.install li { margin: 3px 0; }
+.banner.install p { margin: 6px 0 0; }
+/* Product 140: two-button rows, the home cards grid, quarter cards and a six-tab bar (apps/p140/app.css, 18 Nov 2026) */
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.two .btn { padding: 10px 8px; min-width: 0; }
+.two .btn-big { font-size: 1.08rem; min-height: 60px; }
+.cards2 { display: grid; grid-template-columns: 1fr; gap: 0 14px; margin: 0; }
+@media (min-width: 900px) { .cards2 { grid-template-columns: 1fr 1fr; } }
+.cards2 > .card { min-width: 0; }
+.cards2.top { align-items: start; }
+.card .btn-link { margin-top: 4px; padding-left: 0; }
+.qgrid { display: grid; grid-template-columns: 1fr; gap: 0 14px; }
+@media (min-width: 900px) { .qgrid { grid-template-columns: 1fr 1fr; } }
+.qcard { min-width: 0; }
+.qcard h2 .tag { vertical-align: middle; margin: 0 0 0 4px; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Calibri, Arial, sans-serif; }
+.qcard .stat b, #tx-total-card .stat b, .cards2 .stat b { white-space: normal; text-align: right; }
+.q-diff b, #tx-diff, #hq-diff { font-weight: 700; }
+.stat.total { font-weight: 700; margin-top: 6px; border-top: 1px solid var(--line); }
+.tax-tag { margin-left: 2px; }
+.note-line { display: block; margin-top: 3px; color: var(--muted); overflow-wrap: anywhere; }
+#home-latest li, #home-latest li:has(> .rowbtn) { padding: 0; }
+#e-tax-line { margin: 4px 0 0; }
+.cards2 .linkcard { padding-bottom: 16px; }
+nav.tabs button { font-size: .72rem; min-width: 0; padding: 0 2px; }
+nav.tabs button .ico { font-size: 1.1rem; }
+@media (min-width: 560px) { nav.tabs button { font-size: .85rem; } }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><span class="name">Bookkeeping</span><span class="mark">HOLLOWAY &amp; HART</span></div></header>
+<div class="wrap">
+<main id="main">
+  <div id="banners"></div>
+
+  <section data-screen="welcome" hidden>
+    <div class="steps" aria-hidden="true"><i id="st1"></i><i id="st2"></i></div>
+    <div id="welcome-1">
+      <h1>Hi. Let's set up your books.</h1>
+      <p>A few quick choices, then you can start adding income and expenses. You can change any of them later in Settings.</p>
+      <div class="banner" id="w-advice" role="note"><strong>It's a record-keeping tool. It isn't tax advice.</strong>The tax figures are estimates worked out from what you type. Check them with your tax office or accountant.</div>
+      <form id="w-form" class="card" novalidate>
+        <fieldset class="plain" style="margin-top:0"><legend>Where your business is <span class="hint">Picks the tax words, the quarters and the year</span></legend>
+          <div class="chips" role="radiogroup" aria-label="Where your business is">
+            <label class="chip"><input type="radio" name="w-region" value="AU" checked><span>Australia (GST)</span></label>
+            <label class="chip"><input type="radio" name="w-region" value="US"><span>United States (sales tax)</span></label>
+            <label class="chip"><input type="radio" name="w-region" value="UK"><span>United Kingdom (VAT)</span></label>
+          </div>
+        </fieldset>
+        <p class="small muted" id="w-au-line">GST is 10%. For an entry ticked 'GST included', the GST is the amount ÷ 11.</p>
+        <div id="w-rate-wrap" hidden>
+          <label for="w-rate"><span id="w-rate-label">Your sales tax rate (%)</span> <span class="hint" id="w-rate-hint">The rate you collect, such as 8.25. 0 if you don't collect it.</span></label>
+          <input id="w-rate" type="text" inputmode="decimal" autocomplete="off">
+        </div>
+        <div id="w-q-wrap" hidden>
+          <label for="w-qstart">Your VAT quarters start in <span class="hint">The first month of any one of your VAT quarters, such as April for Apr–Jun</span></label>
+          <select id="w-qstart"></select>
+        </div>
+        <label for="w-cur">Currency symbol <span class="hint">Your own symbol can go in Settings</span></label>
+        <select id="w-cur"><option>$</option><option>AU$</option><option>US$</option><option>£</option><option>€</option></select>
+        <p class="err" id="w-err" hidden></p>
+        <div class="row-buttons" style="margin-top:14px"><button class="btn btn-primary" type="submit" id="w-next">Next</button></div>
+      </form>
+      <div class="card flat">
+        <h2>Just looking?</h2>
+        <p>See the app filled in with made-up income, expenses, trips and quarters first, for the place you picked above. One tap clears them.</p>
+        <button type="button" class="btn btn-quiet" id="w-sample">Try it with sample data first</button>
+      </div>
+    </div>
+    <div id="welcome-2" hidden>
+      <h1>You're set</h1>
+      <p>Add income and expenses as they happen, with a receipt note if you like. The app works out the <span data-tx="name">GST</span> for each quarter, your profit for each month and year, and your mileage.</p>
+      <div class="two">
+        <button type="button" class="btn btn-quiet" id="w-add-income">+ Add income</button>
+        <button type="button" class="btn btn-quiet" id="w-add-expense">+ Add expense</button>
+      </div>
+      <button type="button" class="btn btn-primary btn-big" id="w-finish" style="margin-top:16px">Show my home screen</button>
+    </div>
+  </section>
+
+  <section data-screen="home" hidden>
+    <h1 class="sr">Home</h1>
+    <div class="card hero" id="hero">
+      <div class="label" id="hero-label">Profit this financial year</div>
+      <div class="hero-num" id="hero-num"></div>
+      <div class="cap" id="hero-cap"></div>
+    </div>
+    <div class="two">
+      <button type="button" class="btn btn-primary btn-big" id="add-income">+ Add income</button>
+      <button type="button" class="btn btn-primary btn-big" id="add-expense">+ Add expense</button>
+    </div>
+    <div class="cards2" style="margin-top:14px">
+      <div class="card flat">
+        <h2 id="hm-head">This month</h2>
+        <div class="stat"><span>Income</span><b id="hm-income"></b></div>
+        <div class="stat"><span>Expenses</span><b id="hm-expense"></b></div>
+        <div class="stat"><span>Profit</span><b id="hm-profit"></b></div>
+      </div>
+      <div class="card">
+        <h2 id="hq-head">GST this quarter</h2>
+        <div class="stat"><span><span data-tx="Name">GST</span> collected</span><b id="hq-col"></b></div>
+        <div class="stat"><span><span data-tx="Name">GST</span> paid</span><b id="hq-paid"></b></div>
+        <div class="stat"><span>Difference</span><b id="hq-diff"></b></div>
+        <p class="small muted" style="margin:6px 0 0">An estimate from what you typed.</p>
+        <button type="button" class="btn-link" data-go="tax">Open <span data-tx="title">GST &amp; BAS</span> ›</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Mileage this <span data-tx="yearWord">financial year</span></h2>
+      <p id="hmi-line"></p>
+      <button type="button" class="btn-link" data-go="mileage">Open Mileage ›</button>
+    </div>
+    <div class="card flat">
+      <h2>Latest entries</h2>
+      <ul class="list" id="home-latest"></ul>
+      <p class="muted small" id="home-latest-none">No entries yet. Add your first one above.</p>
+      <button type="button" class="btn-link" data-go="entries">All entries ›</button>
+    </div>
+    <div class="card flat">
+      <h2>How these numbers work</h2>
+      <p class="small" id="home-how"></p>
+    </div>
+  </section>
+
+  <section data-screen="entry" hidden>
+    <h1 id="e-title">Add income</h1>
+    <form id="e-form" class="card" novalidate>
+      <fieldset class="plain" style="margin-top:0"><legend>This is</legend>
+        <div class="chips" role="radiogroup" aria-label="Income or expense">
+          <label class="chip"><input type="radio" name="etype" value="income"><span>Income</span></label>
+          <label class="chip"><input type="radio" name="etype" value="expense"><span>Expense</span></label>
+        </div>
+      </fieldset>
+      <label for="e-amount">Amount <span class="hint">The total, as on the invoice or receipt</span></label>
+      <input id="e-amount" class="big" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+      <p class="err" id="e-err" hidden></p>
+      <label class="check"><input id="e-taxin" type="checkbox"> <span data-tx="tick">GST included</span></label>
+      <p class="small muted" id="e-tax-line" aria-live="polite"></p>
+      <label for="e-desc">Description <span class="hint">Optional, such as the client, the shop or what it was for</span></label>
+      <input id="e-desc" type="text" maxlength="60" autocomplete="off">
+      <fieldset class="plain"><legend>Category</legend><div class="chips" id="e-cats"></div></fieldset>
+      <p class="small" id="e-day-line" style="margin-top:12px">Day: <b id="e-day-text">Today</b> <button type="button" class="btn-link" id="e-day-change">Change day</button></p>
+      <div id="e-day-wrap" hidden><label for="e-date">Day</label><input id="e-date" type="date"></div>
+      <label for="e-note">Receipt note <span class="hint">Optional: an invoice number, or where the receipt is kept</span></label>
+      <textarea id="e-note" rows="2" maxlength="200"></textarea>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary btn-big" type="submit" id="e-save">Save</button>
+      </div>
+      <div class="row-buttons" style="margin-top:10px">
+        <button type="button" class="btn btn-quiet" id="e-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="e-delete" hidden>Delete</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="entries" hidden>
+    <h1>Entries</h1>
+    <p class="muted">Every payment in and out, newest first. Tap one to change it.</p>
+    <div class="two">
+      <button type="button" class="btn btn-primary" id="en-add-income">+ Add income</button>
+      <button type="button" class="btn btn-primary" id="en-add-expense">+ Add expense</button>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <label for="en-year">Year</label>
+      <select id="en-year"></select>
+      <fieldset class="plain"><legend>Show</legend>
+        <div class="chips" role="radiogroup" aria-label="Show">
+          <label class="chip"><input type="radio" name="en-type" value="all"><span>All</span></label>
+          <label class="chip"><input type="radio" name="en-type" value="income"><span>Income</span></label>
+          <label class="chip"><input type="radio" name="en-type" value="expense"><span>Expenses</span></label>
+        </div>
+      </fieldset>
+      <p class="small muted" id="en-count" style="margin-top:10px"></p>
+      <ul class="list" id="en-list"></ul>
+      <p class="muted small" id="en-none">No entries here yet.</p>
+    </div>
+    <div class="card flat">
+      <h2>Export as CSV</h2>
+      <p class="small">A CSV file opens in any spreadsheet, for your own records or for your accountant.</p>
+      <label for="exp-year">Which entries</label>
+      <select id="exp-year"></select>
+      <div class="row-buttons" style="margin-top:12px">
+        <button type="button" class="btn btn-quiet" id="exp-entries">Export entries as CSV</button>
+        <button type="button" class="btn btn-quiet" id="exp-trips">Export trips as CSV</button>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen="tax" hidden>
+    <h1 data-tx="title">GST &amp; BAS</h1>
+    <div class="banner" id="tx-note"><strong>Estimates from what you typed</strong>Worked out from your entries for each quarter. They aren't a tax return or a bill: check them with your tax office or accountant before you send anything.</div>
+    <div class="card">
+      <label for="tx-year">Year</label>
+      <select id="tx-year"></select>
+      <p class="small muted" id="tx-range" style="margin:6px 0 0"></p>
+    </div>
+    <div class="qgrid" id="tx-quarters"></div>
+    <div class="card" id="tx-total-card">
+      <h2 id="tx-total-head">The whole year</h2>
+      <div class="stat"><span><span data-tx="Name">GST</span> collected on sales</span><b id="tx-col"></b></div>
+      <div class="stat"><span><span data-tx="Name">GST</span> paid on expenses</span><b id="tx-paid"></b></div>
+      <div class="stat"><span>Difference</span><b id="tx-diff"></b></div>
+    </div>
+    <div class="card flat"><h2>How it's worked out</h2><p class="small" id="tx-how"></p></div>
+  </section>
+
+  <section data-screen="pl" hidden>
+    <h1>Profit &amp; loss</h1>
+    <p class="muted" id="pl-intro"></p>
+    <div class="card">
+      <label for="pl-year">Year</label>
+      <select id="pl-year"></select>
+      <p class="small muted" id="pl-range" style="margin:6px 0 0"></p>
+      <label for="pl-period">Show</label>
+      <select id="pl-period"></select>
+    </div>
+    <div class="card hero">
+      <div class="label" id="pl-head"></div>
+      <div class="hero-num" id="pl-profit"></div>
+      <div class="cap" id="pl-cap"></div>
+    </div>
+    <div class="cards2 top">
+      <div class="card">
+        <h2>Income</h2>
+        <ul class="list" id="pl-inc-cats"></ul>
+        <p class="muted small" id="pl-inc-none">No income here yet.</p>
+        <div class="stat total"><span>Total income</span><b id="pl-income"></b></div>
+      </div>
+      <div class="card">
+        <h2>Expenses</h2>
+        <ul class="list" id="pl-exp-cats"></ul>
+        <p class="muted small" id="pl-exp-none">No expenses here yet.</p>
+        <div class="stat total"><span>Total expenses</span><b id="pl-expense"></b></div>
+      </div>
+    </div>
+    <div class="card flat">
+      <h2>Month by month</h2>
+      <p class="small muted">Tap a month to see it above.</p>
+      <ul class="list" id="pl-months"></ul>
+    </div>
+    <div class="card flat"><h2>Mileage</h2><p id="pl-mileage"></p></div>
+  </section>
+
+  <section data-screen="mileage" hidden>
+    <h1>Mileage</h1>
+    <p class="muted">Your business trips: the day, what for and how far. The estimate uses your own rate.</p>
+    <div class="card">
+      <label for="mi-year">Year</label>
+      <select id="mi-year"></select>
+      <div class="stat" style="margin-top:10px"><span>Business trips</span><b id="mi-count"></b></div>
+      <div class="stat"><span>Distance</span><b id="mi-total"></b></div>
+      <div class="stat"><span>Estimate at your rate</span><b id="mi-claim"></b></div>
+      <p class="small muted" id="mi-claim-note" style="margin:6px 0 0"></p>
+    </div>
+    <form id="mi-form" class="card flat" novalidate>
+      <label for="mi-rate">Your rate per <span data-unit="one">km</span> <span class="hint">The rate you use for business trips, such as the tax office's rate for the year. Up to 3 decimals. Blank for no estimate.</span></label>
+      <input id="mi-rate" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+      <p class="err" id="mi-err" hidden></p>
+      <p class="muted small" id="mi-saved" aria-live="polite"></p>
+    </form>
+    <button type="button" class="btn btn-primary" id="trip-add">+ Add a trip</button>
+    <div class="card" style="margin-top:14px">
+      <h2 id="mi-list-head">Trips</h2>
+      <ul class="list" id="trip-list"></ul>
+      <p class="muted small" id="trip-none">No trips in this year yet.</p>
+    </div>
+    <div class="card flat"><p class="small">The mileage estimate isn't added into Profit, so a vehicle cost is never counted twice. Changing km or miles in Settings changes the word only: your trips keep the numbers you typed.</p></div>
+  </section>
+
+  <section data-screen="trip" hidden>
+    <h1 id="t-title">Add a trip</h1>
+    <form id="t-form" class="card" novalidate>
+      <label for="t-dist">How far <span class="hint">In <span data-unit="many">km</span>, such as 12.5</span></label>
+      <input id="t-dist" class="big" type="text" inputmode="decimal" autocomplete="off" placeholder="0.0">
+      <p class="err" id="t-err" hidden></p>
+      <label for="t-purpose">What for <span class="hint">Optional, such as Supplier pick-up</span></label>
+      <input id="t-purpose" type="text" maxlength="60" autocomplete="off">
+      <label for="t-date">Day</label>
+      <input id="t-date" type="date">
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary" type="submit" id="t-save">Save trip</button>
+        <button type="button" class="btn btn-quiet" id="t-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="t-delete" hidden>Delete</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="settings" hidden>
+    <h1>Settings</h1>
+    <form id="set-form" class="card" novalidate>
+      <h2>Your business</h2>
+      <fieldset class="plain" style="margin-top:0"><legend>Where your business is <span class="hint">Picks the tax words, the quarters and the year. Your entries stay as they are.</span></legend>
+        <div class="chips" role="radiogroup" aria-label="Where your business is">
+          <label class="chip"><input type="radio" name="s-region" value="AU"><span>Australia (GST)</span></label>
+          <label class="chip"><input type="radio" name="s-region" value="US"><span>United States (sales tax)</span></label>
+          <label class="chip"><input type="radio" name="s-region" value="UK"><span>United Kingdom (VAT)</span></label>
+        </div>
+      </fieldset>
+      <p class="small muted" id="s-au-line" style="margin-top:8px">GST is 10%. For an entry ticked 'GST included', the GST is the amount ÷ 11.</p>
+      <div id="s-rate-wrap" hidden>
+        <label for="s-rate"><span id="s-rate-label">Sales tax rate (%)</span> <span class="hint">Up to 2 decimals. 0 counts no tax.</span></label>
+        <input id="s-rate" type="text" inputmode="decimal" autocomplete="off">
+      </div>
+      <div id="s-q-wrap" hidden>
+        <label for="s-qstart">Your VAT quarters start in <span class="hint">The first month of any one of your VAT quarters</span></label>
+        <select id="s-qstart"></select>
+      </div>
+      <p class="err" id="s-err" hidden></p>
+      <fieldset class="plain"><legend>Currency symbol</legend>
+        <div class="chips" role="radiogroup" aria-label="Currency symbol">
+          <label class="chip"><input type="radio" name="s-cur" value="$"><span>$</span></label>
+          <label class="chip"><input type="radio" name="s-cur" value="AU$"><span>AU$</span></label>
+          <label class="chip"><input type="radio" name="s-cur" value="US$"><span>US$</span></label>
+          <label class="chip"><input type="radio" name="s-cur" value="£"><span>£</span></label>
+          <label class="chip"><input type="radio" name="s-cur" value="€"><span>€</span></label>
+        </div>
+      </fieldset>
+      <label for="s-cur-own">Or type your own <span class="hint">Up to 4 characters</span></label>
+      <input id="s-cur-own" type="text" maxlength="4" autocomplete="off">
+      <fieldset class="plain"><legend>Distances in</legend>
+        <div class="chips" role="radiogroup" aria-label="Distances in">
+          <label class="chip"><input type="radio" name="s-units" value="km"><span>km</span></label>
+          <label class="chip"><input type="radio" name="s-units" value="miles"><span>miles</span></label>
+        </div>
+      </fieldset>
+      <p class="muted small" id="s-saved" aria-live="polite" style="margin-top:10px"></p>
+    </form>
+    <div class="card">
+      <h2>Categories</h2>
+      <label for="s-inc-cats">Income categories <span class="hint">One per line, in the order you like. Entries you've already made keep their category.</span></label>
+      <textarea id="s-inc-cats" rows="5"></textarea>
+      <label for="s-exp-cats">Expense categories <span class="hint">One per line</span></label>
+      <textarea id="s-exp-cats" rows="15"></textarea>
+      <p class="muted small" id="s-cats-saved" aria-live="polite"></p>
+    </div>
+    <div class="card flat">
+      <h2>Look</h2>
+      <div class="chips" role="radiogroup" aria-label="Theme">
+        <label class="chip"><input type="radio" name="theme" value="auto"><span>Follow my device</span></label>
+        <label class="chip"><input type="radio" name="theme" value="light"><span>Light</span></label>
+        <label class="chip"><input type="radio" name="theme" value="dark"><span>Dark</span></label>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Backup</h2>
+      <p>Your information stays in this browser on this device. A backup is a small file with everything in it, so you can get it back if the browser's data is cleared or you change devices.</p>
+      <p class="muted small" id="last-backup"></p>
+      <div class="row-buttons">
+        <button type="button" class="btn btn-primary" id="backup-btn">Back up now</button>
+        <label class="btn btn-quiet" for="restore-file" style="margin:0">Restore a backup</label>
+        <input id="restore-file" type="file" accept=".json,application/json" hidden>
+      </div>
+      <div id="restore-msg" aria-live="polite"></div>
+    </div>
+    <div class="card flat">
+      <h2>Sample data</h2>
+      <p id="sample-state"></p>
+      <button type="button" class="btn btn-quiet" id="sample-btn"></button>
+    </div>
+    <div class="card flat">
+      <h2>Start fresh</h2>
+      <p>Deletes everything in the app from this browser. Back up first if you might want it again.</p>
+      <button type="button" class="btn btn-danger" id="fresh-btn">Start fresh</button>
+    </div>
+    <div class="card flat">
+      <h2>Help</h2>
+      <p>How your information is kept, backups, moving to a new device, and how the numbers are worked out.</p>
+      <button type="button" class="btn btn-quiet" id="help-btn">Open Help</button>
+    </div>
+    <p class="muted small" id="app-version" aria-live="polite"></p>
+    <footer class="foot">Bookkeeping · version 1 · HOLLOWAY &amp; HART · Digital downloads that do what they say · Made in Melbourne</footer>
+  </section>
+
+  <section data-screen="help" hidden>
+    <h1>Help</h1>
+    <div class="card" id="help-advice"><h2>A record-keeping tool</h2>
+      <p><b>It's a record-keeping tool. It isn't tax advice.</b> The tax figures, the profit and the mileage estimate are worked out from what you type, so they are only as right as the entries. Your tax office or an accountant can tell you what applies to your business.</p></div>
+    <div class="card"><h2>Where your information is kept</h2>
+      <p>Everything you type stays in this browser on this device. Nothing is sent anywhere, and the app works with no internet. There is no account and no subscription.</p></div>
+    <div class="card"><h2>Keep a backup</h2>
+      <p>Settings → Back up now saves a small .json file with everything in it. Do it every few weeks. The app reminds you if it has been 30 days.</p>
+      <p>If you clear your browser's history or site data, the app's information goes with it. A backup brings it back: Settings → Restore a backup.</p></div>
+    <div class="card"><h2>Open it the same way each time</h2>
+      <p>Each browser keeps its own copy. If you open the app in two different browsers, you get two separate copies. Pick one way to open it and keep to it: in some browsers a moved or renamed computer copy opens empty. Restore your backup if that happens.</p></div>
+    <div class="card"><h2>A new phone or computer</h2>
+      <p>On the old device: Settings → Back up now. Move the backup file to the new device (email it to yourself, or use a cloud drive), open the app there, then Settings → Restore a backup.</p></div>
+    <div class="card"><h2>The tax figures</h2>
+      <p>Australia: for an entry ticked 'GST included', the GST is the amount ÷ 11, rounded to the cent. BAS quarters run Jul–Sep, Oct–Dec, Jan–Mar and Apr–Jun in a financial year from 1 July to 30 June.</p>
+      <p>United States and United Kingdom: for an entry ticked 'Sales tax included' or 'VAT included', the tax is the amount × rate ÷ (100 + rate), rounded to the cent, at the rate in Settings. Sales tax quarters follow the calendar year; VAT quarters start in the month you pick.</p>
+      <p>For each quarter the app adds up the tax in your income (collected) and in your expenses (paid), and shows the difference. These are estimates from what you typed. They aren't a tax return or a bill.</p></div>
+    <div class="card"><h2>Profit and loss</h2>
+      <p>Every entry counts at its amount without the tax (for entries that are ticked). Profit = income − expenses, for the whole year or any month. The year is the Australian financial year (1 Jul – 30 Jun), the calendar year in the United States, or the UK tax year (6 Apr – 5 Apr).</p></div>
+    <div class="card"><h2>Mileage</h2>
+      <p>Type each business trip's distance. The year's estimate is the total distance × your rate, rounded to the cent. It isn't added into Profit, so a vehicle cost is never counted twice.</p></div>
+    <div class="card"><h2>CSV export</h2>
+      <p>Entries → Export entries as CSV saves your entries (all years, or one year) as a file any spreadsheet opens: the day, income or expense, category, description, amount, the tax part, the amount without tax and the receipt note. Export trips as CSV does the same for your trips.</p></div>
+    <button type="button" class="btn btn-quiet" id="help-back">Back to Settings</button>
+  </section>
+</main>
+</div>
+<nav class="tabs" id="tabs" aria-label="Screens"><div class="wrap">
+  <button type="button" data-nav="home"><span class="ico" aria-hidden="true">&#9679;</span><span class="lbl">Home</span></button>
+  <button type="button" data-nav="entries"><span class="ico" aria-hidden="true">&#9776;</span><span class="lbl">Entries</span></button>
+  <button type="button" data-nav="tax"><span class="ico" aria-hidden="true">&#9636;</span><span class="lbl" data-tx="tab">GST</span></button>
+  <button type="button" data-nav="pl"><span class="ico" aria-hidden="true">&#8721;</span><span class="lbl">P&amp;L</span></button>
+  <button type="button" data-nav="mileage"><span class="ico" aria-hidden="true">&#8674;</span><span class="lbl">Mileage</span></button>
+  <button type="button" data-nav="settings"><span class="ico" aria-hidden="true">&#9881;</span><span class="lbl">Settings</span></button>
+</div></nav>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<div id="modal" hidden></div>
+
+<script src="./app.js"></script>
+</body>
+</html>
