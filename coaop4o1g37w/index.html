@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en-AU" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; manifest-src 'self'; worker-src 'self'; font-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="description" content="Every item you resell in one app: what you have in, what&#x27;s listed and for how long, what sold, and the real profit after platform fees, shipping and what you paid, per item, per month and per year, with mileage. Works offline, no account, no subscription; your information stays on your device.">
+<meta name="author" content="Jaz Sandhu">
+<meta name="generator" content="Holloway &amp; Hart 18Nov2026.6">
+<meta name="color-scheme" content="light dark">
+<title>Reseller Inventory &amp; Profit · Holloway &amp; Hart</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Reseller">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#4E5A61" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#A9BAC4" media="(prefers-color-scheme: dark)">
+<style>
+:root { color-scheme: light; --bg: #F6F2EA; --card: #FFFDF9; --card-alt: #EFE8DC; --ink: #2F2B27; --muted: #8A8177; --line: #E2D9CB; --input: #FBF3E2; --input-border: #D9C7A6; --accent: #4E5A61; --on-accent: #FFFFFF; --highlight: #E8722B; --positive: #6E8B63; --soft: #F3D6C0; }
+:root[data-theme=dark] { color-scheme: dark; --bg: #181B1D; --card: #22272A; --card-alt: #2B3135; --ink: #EDE8E0; --muted: #9AA1A5; --line: #353B40; --input: #2E3539; --input-border: #56605F; --accent: #A9BAC4; --on-accent: #181B1D; --highlight: #F08A48; --positive: #9CC49A; --soft: #543A29; }
+@media (prefers-color-scheme: dark) { :root[data-theme=auto] { color-scheme: dark; --bg: #181B1D; --card: #22272A; --card-alt: #2B3135; --ink: #EDE8E0; --muted: #9AA1A5; --line: #353B40; --input: #2E3539; --input-border: #56605F; --accent: #A9BAC4; --on-accent: #181B1D; --highlight: #F08A48; --positive: #9CC49A; --soft: #543A29; } }
+/* Holloway & Hart app chassis (apps/core.css). Colours come from chassis/theme.py tokens (written above this by the build):
+   --bg --card --card-alt --ink --muted --line --input --input-border --accent --on-accent --highlight --positive --soft */
+*, *::before, *::after { box-sizing: border-box; }
+/* the hidden attribute always wins (8 Nov 2026: .btn's display: inline-flex showed the Delete button on a new Add spending
+   screen, and would on any element whose class sets a display) */
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 17px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, Calibri, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+}
+.serif, h1, h2, .hero-num { font-family: Georgia, "Times New Roman", serif; }
+h1 { font-size: 1.45rem; margin: 0 0 12px; line-height: 1.2; }
+h1:focus { outline: none; }
+h2 { font-size: 1.15rem; margin: 0 0 8px; }
+p { margin: 0 0 10px; }
+a { color: var(--accent); }
+.wrap { max-width: 620px; margin: 0 auto; padding: 0 16px 112px; }
+.topbar { background: var(--accent); color: var(--on-accent); }
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; min-height: 52px; gap: 12px; }
+.topbar .name { font-family: Georgia, "Times New Roman", serif; font-weight: bold; font-size: 1.05rem; }
+.topbar .mark { font-size: .7rem; letter-spacing: .14em; opacity: .9; white-space: nowrap; }
+main { padding-top: 16px; }
+.card { background: var(--card); border-radius: 14px; padding: 16px; margin: 0 0 14px; border-top: 3px solid var(--accent); }
+.card.flat { border-top-color: var(--line); }
+.muted { color: var(--muted); }
+.small { font-size: .9rem; }
+.hero { text-align: center; padding: 22px 16px 18px; }
+.hero .label { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
+.hero-num { font-size: clamp(2.6rem, 13vw, 4rem); font-weight: bold; line-height: 1.05; margin: 2px 0 8px; overflow-wrap: anywhere; }
+.hero .cap { font-size: 1.05rem; }
+.banner { border-radius: 12px; padding: 12px 14px; margin: 0 0 14px; background: var(--soft); border: 1px solid var(--line); }
+.banner strong { display: block; margin-bottom: 2px; }
+.banner .row-buttons { margin-top: 8px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; padding: 10px 18px;
+  border-radius: 12px; border: 2px solid transparent; font: inherit; font-weight: 600; cursor: pointer; text-decoration: none;
+  background: var(--card-alt); color: var(--ink);
+}
+.btn-primary { background: var(--accent); color: var(--on-accent); }
+.btn-big { width: 100%; min-height: 60px; font-size: 1.2rem; }
+.btn-quiet { background: transparent; border-color: var(--line); }
+.btn-danger { background: transparent; border-color: var(--ink); }
+.btn-link { background: none; border: 0; color: var(--accent); font: inherit; font-weight: 600; cursor: pointer; min-height: 44px; padding: 8px 4px; text-decoration: underline; }
+.row-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible, label.chip:focus-within {
+  outline: 3px solid var(--highlight); outline-offset: 2px;
+}
+label { display: block; font-weight: 600; margin: 12px 0 4px; }
+.hint { display: block; font-weight: normal; color: var(--muted); font-size: .9rem; }
+input[type=text], input[type=date], input[type=number], select {
+  width: 100%; min-height: 48px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--input);
+  border: 1.5px solid var(--input-border); border-radius: 10px;
+}
+input.big { font-size: 2rem; min-height: 64px; text-align: center; font-family: Georgia, "Times New Roman", serif; }
+.err { color: var(--ink); font-weight: 600; margin: 6px 0 0; }
+.err::before { content: "\2192  "; }
+.check { display: flex; align-items: center; gap: 10px; min-height: 48px; font-weight: 600; margin: 10px 0 0; }
+.check input { width: 24px; height: 24px; accent-color: var(--accent); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.chip { position: relative; margin: 0; font-weight: 500; }
+.chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chip span { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; border-radius: 22px; border: 1.5px solid var(--input-border); background: var(--input); cursor: pointer; }
+.chip input:checked + span { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.chip input:checked + span::before { content: "\2713  "; }
+.list { list-style: none; margin: 0; padding: 0; }
+.list li { border-top: 1px solid var(--line); padding: 10px 0; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.list li:first-child { border-top: 0; }
+.list .what { flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
+.list .amt { font-weight: 700; white-space: nowrap; }
+.tag { display: inline-block; font-size: .8rem; padding: 2px 8px; border-radius: 10px; background: var(--card-alt); margin-top: 3px; }
+.bar { height: 12px; border-radius: 6px; background: var(--card-alt); overflow: hidden; margin-top: 4px; }
+.bar > i { display: block; height: 100%; background: var(--highlight); }
+.stat { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.stat:first-of-type { border-top: 0; }
+.stat b { white-space: nowrap; }
+details summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
+nav.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom); z-index: 5;
+}
+nav.tabs .wrap { display: flex; padding: 0 8px; }
+nav.tabs button {
+  flex: 1 1 0; min-height: 60px; background: none; border: 0; color: var(--muted); font: inherit; font-size: .85rem;
+  font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+}
+nav.tabs button .ico { font-size: 1.25rem; line-height: 1; }
+nav.tabs button.on { color: var(--accent); }
+nav.tabs button.on .lbl { text-decoration: underline; text-underline-offset: 4px; }
+#toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 76px; z-index: 9; max-width: calc(100% - 32px);
+  background: var(--ink); color: var(--bg); border-radius: 12px; padding: 6px 8px 6px 16px; display: flex; gap: 12px; align-items: center;
+}
+#toast[hidden] { display: none; }
+#toast .btn-link { color: var(--bg); }
+#modal { position: fixed; inset: 0; background: rgba(0, 0, 0, .45); z-index: 10; display: flex; align-items: center; justify-content: center; padding: 16px; }
+#modal[hidden] { display: none; }
+.modal-card { background: var(--card); color: var(--ink); border-radius: 14px; padding: 20px; max-width: 460px; width: 100%; }
+.steps { display: flex; gap: 6px; margin-bottom: 12px; }
+.steps i { flex: 1; height: 6px; border-radius: 3px; background: var(--card-alt); }
+.steps i.on { background: var(--accent); }
+.sample-flag { font-weight: 700; letter-spacing: .08em; }
+footer.foot { text-align: center; font-size: .8rem; color: var(--muted); margin: 24px 0 0; }
+@media (min-width: 900px) { body { font-size: 18px; } .wrap { max-width: 680px; } }
+@media (prefers-reduced-motion: no-preference) {
+  .btn, .chip span, nav.tabs button { transition: background-color .15s, color .15s; }
+}
+@media print { nav.tabs, #toast { display: none; } }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+fieldset.plain { border: 0; margin: 12px 0 0; padding: 0; min-width: 0; }
+fieldset.plain legend { font-weight: 600; padding: 0; margin-bottom: 4px; }
+.banner.slim { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 6px 8px 6px 14px; }
+.banner.slim .btn { min-height: 44px; padding: 6px 14px; }
+.rowbtn {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 10px 0; background: none; border: 0;
+  color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.list li.plain, .list li:has(> .rowbtn) { padding: 0; }
+.rowbtn .chev { font-size: 1.5rem; line-height: 1; color: var(--muted); padding-left: 2px; }
+/* 8 Nov 2026 (71 Christmas Gift Tracker): a 20-block progress bar, a 'done' tag, and textareas styled like the inputs */
+.blocks { display: inline-flex; gap: 2px; margin-top: 6px; }
+.blocks i { display: block; width: 9px; height: 10px; border-radius: 2px; background: var(--card-alt); }
+.blocks i.on { background: var(--highlight); }
+.tag.done { background: var(--soft); font-weight: 600; }
+textarea { width: 100%; min-height: 96px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--input); border: 1.5px solid var(--input-border); border-radius: 10px; resize: vertical; }
+.list li .btn { min-height: 44px; padding: 6px 14px; }
+/* 9 Nov 2026 (hosted build, Home Screen web apps): safe areas on phones with a notch or a home bar, and the install card */
+.wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+.topbar { padding-top: env(safe-area-inset-top); }
+.topbar .wrap { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+nav.tabs .wrap { padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right)); }
+#toast { bottom: calc(76px + env(safe-area-inset-bottom)); }
+.banner.install { margin-top: 16px; }
+.banner.install ol { margin: 6px 0 4px 22px; padding: 0; }
+.banner.install li { margin: 3px 0; }
+.banner.install p { margin: 6px 0 0; }
+/* Product 139: the home cards grid, item rows with a caption over the amount, a 'Mark as sold' line under a row, and a six-tab bar
+   (apps/p139/app.css, 18 Nov 2026) */
+.cards2 { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 14px 0; }
+@media (min-width: 560px) { .cards2 { grid-template-columns: 1fr 1fr; } }
+.linkcard { text-align: left; font: inherit; color: inherit; cursor: pointer; margin: 0; width: 100%; display: block; position: relative; padding-bottom: 36px; }
+.linkcard h2 { margin-bottom: 4px; }
+.linkcard p { margin: 0; }
+.linkcard .more { position: absolute; right: 16px; bottom: 12px; color: var(--accent); font-weight: 600; }
+.mini { list-style: none; margin: 0; padding: 0; }
+.mini li { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; }
+.list .amt { text-align: right; }
+.amt-cap { display: block; font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.list li .rowsub { width: 100%; padding: 0 0 10px; margin-top: -4px; }
+.chip .cnt { font-weight: 400; opacity: .85; margin-left: 2px; }
+.stat .hint { font-size: .8rem; }
+#profit-box .stat b { font-size: 1.2rem; font-family: Georgia, "Times New Roman", serif; }
+#ag-groups li .amt { font-size: 1.05rem; }
+.btn:disabled { opacity: .55; cursor: default; }
+nav.tabs button { font-size: .74rem; min-width: 0; padding: 0 2px; }
+nav.tabs button .ico { font-size: 1.1rem; }
+@media (min-width: 560px) { nav.tabs button { font-size: .85rem; } }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><span class="name">Reseller Inventory</span><span class="mark">HOLLOWAY &amp; HART</span></div></header>
+<div class="wrap">
+<main id="main">
+  <div id="banners"></div>
+
+  <section data-screen="welcome" hidden>
+    <div class="steps" aria-hidden="true"><i id="st1"></i><i id="st2"></i></div>
+    <div id="welcome-1">
+      <h1>Hi. Let's set up your reselling.</h1>
+      <p>Two quick steps. Then add what you buy, mark it listed and sold, and the app works out what each item really made after fees, shipping and what you paid for it.</p>
+      <form id="w-form" class="card" novalidate>
+        <fieldset class="plain"><legend>Currency</legend>
+          <div class="chips" role="radiogroup" aria-label="Currency" id="w-cur-chips"></div>
+        </fieldset>
+        <div id="w-cur-own-wrap" hidden><label for="w-cur-own">Your currency symbol <span class="hint">Up to 4 characters</span></label>
+          <input id="w-cur-own" type="text" maxlength="4" autocomplete="off"></div>
+        <fieldset class="plain"><legend>Distances in</legend>
+          <div class="chips" role="radiogroup" aria-label="Distances in">
+            <label class="chip"><input type="radio" name="w-unit" value="km" checked><span>Kilometres (km)</span></label>
+            <label class="chip"><input type="radio" name="w-unit" value="mi"><span>Miles</span></label>
+          </div>
+        </fieldset>
+        <label for="w-rate" id="w-rate-label">Mileage rate per km <span class="hint">What you count for each km you drive for your selling. Check the current rate where you live. 0 is fine for now.</span></label>
+        <input id="w-rate" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+        <p class="err" id="w-err" hidden></p>
+        <div class="row-buttons" style="margin-top:14px"><button class="btn btn-primary" type="submit" id="w-next">Next</button></div>
+      </form>
+      <div class="card flat">
+        <h2>Just looking?</h2>
+        <p>See the app filled in with made-up items first: stock, listings of every age, sales, monthly profit and mileage. One tap clears them.</p>
+        <button type="button" class="btn btn-quiet" id="w-sample">Try it with sample data first</button>
+      </div>
+    </div>
+    <div id="welcome-2" hidden>
+      <h1>Your platforms and their fees</h1>
+      <p><b>Example rates: check your platform's current fees.</b> Fees change, and they differ by country, category and seller level, so tap a platform to type your own rate. You can do this later in Settings.</p>
+      <div class="card"><ul class="list" id="w-plat-list"></ul></div>
+      <div class="row-buttons">
+        <button type="button" class="btn btn-quiet" id="w-plat-add">+ Add a platform</button>
+      </div>
+      <button type="button" class="btn btn-primary btn-big" id="w-done" style="margin-top:16px">Done, show my home screen</button>
+    </div>
+  </section>
+
+  <section data-screen="home" hidden>
+    <h1 class="sr">Home</h1>
+    <div class="card hero" id="hero">
+      <div class="label">Profit this month</div>
+      <div class="hero-num" id="hero-profit"></div>
+      <div class="cap" id="hero-cap"></div>
+    </div>
+    <button type="button" class="btn btn-primary btn-big" id="add-item-btn">+ Add an item</button>
+    <button type="button" class="btn btn-quiet btn-big" id="sell-btn" style="margin-top:10px">Record a sale</button>
+    <div class="card flat" style="margin-top:14px">
+      <div class="stat"><span>In stock, not listed yet</span><b id="st-stock"></b></div>
+      <div class="stat"><span>Listed</span><b id="st-listed"></b></div>
+      <div class="stat"><span>Unsold stock at cost</span><b id="st-atcost"></b></div>
+      <div class="stat"><span>Listed over 90 days</span><b id="st-old"></b></div>
+    </div>
+    <div class="cards2">
+      <button type="button" class="card linkcard" id="hc-items" data-go="items"><h2>Items</h2><p id="hc-items-line"></p><span class="more">Open ›</span></button>
+      <button type="button" class="card linkcard" id="hc-ageing" data-go="ageing"><h2>Ageing stock</h2><ul class="mini" id="hc-ageing-list"></ul><span class="more">Open ›</span></button>
+      <button type="button" class="card linkcard" id="hc-year" data-go="profit"><h2 id="hc-year-head">This year</h2><p id="hc-year-line"></p><span class="more">Open ›</span></button>
+      <button type="button" class="card linkcard" id="hc-miles" data-go="mileage"><h2>Mileage</h2><p id="hc-miles-line"></p><span class="more">Open ›</span></button>
+    </div>
+    <div class="card" id="recent-card">
+      <h2>Recent sales</h2>
+      <ul class="list" id="recent-list"></ul>
+      <p class="muted small" id="recent-none">No sales yet. When something sells, tap Record a sale.</p>
+    </div>
+    <div class="card flat">
+      <h2>How profit is worked out</h2>
+      <p class="small">Profit on an item = sale price + shipping charged to the buyer − platform fees − shipping you paid − what you paid for the item. A month's profit is every item sold that month added up.</p>
+    </div>
+  </section>
+
+  <section data-screen="items" hidden>
+    <h1>Items</h1>
+    <p class="muted">Everything you've bought to resell. Tap an item to change it.</p>
+    <div class="row-buttons">
+      <button type="button" class="btn btn-primary" id="items-add">+ Add an item</button>
+      <button type="button" class="btn btn-quiet" id="export-btn">Export items as CSV</button>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <fieldset class="plain" style="margin-top:0"><legend class="sr">Show</legend>
+        <div class="chips" role="radiogroup" aria-label="Show" id="flt-chips">
+          <label class="chip"><input type="radio" name="flt" value="all" checked><span>All <small class="cnt" id="cnt-all"></small></span></label>
+          <label class="chip"><input type="radio" name="flt" value="stock"><span>In stock <small class="cnt" id="cnt-stock"></small></span></label>
+          <label class="chip"><input type="radio" name="flt" value="listed"><span>Listed <small class="cnt" id="cnt-listed"></small></span></label>
+          <label class="chip"><input type="radio" name="flt" value="sold"><span>Sold <small class="cnt" id="cnt-sold"></small></span></label>
+        </div>
+      </fieldset>
+      <label for="it-search">Search <span class="hint">By name or notes</span></label>
+      <input id="it-search" type="text" autocomplete="off">
+      <ul class="list" id="item-list" style="margin-top:10px"></ul>
+      <p class="muted small" id="item-none">No items yet. Tap + Add an item.</p>
+    </div>
+    <p class="small muted" id="export-note">The CSV opens in any spreadsheet: one row per item with its dates, platform, prices, fees and profit.</p>
+  </section>
+
+  <section data-screen="item" hidden>
+    <h1 id="item-title">Add an item</h1>
+    <form id="item-form" novalidate>
+      <div class="card">
+        <label for="it-name">Item</label>
+        <input id="it-name" type="text" maxlength="60" autocomplete="off" placeholder="Denim jacket">
+        <label for="it-notes">Notes <span class="hint">Optional: size, where it's stored, where it came from</span></label>
+        <input id="it-notes" type="text" maxlength="200" autocomplete="off">
+        <label for="it-cost">Cost of the item <span class="hint">What you paid for it. 0 is fine.</span></label>
+        <input id="it-cost" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+        <label for="it-bought">Date bought</label>
+        <input id="it-bought" type="date">
+      </div>
+      <div class="card">
+        <fieldset class="plain" style="margin-top:0"><legend>Where it's at</legend>
+          <div class="chips" role="radiogroup" aria-label="Where it's at">
+            <label class="chip"><input type="radio" name="status" value="stock"><span>In stock</span></label>
+            <label class="chip"><input type="radio" name="status" value="listed"><span>Listed</span></label>
+            <label class="chip"><input type="radio" name="status" value="sold"><span>Sold</span></label>
+          </div>
+        </fieldset>
+        <div id="listed-box" hidden>
+          <label for="it-platform">Platform <span class="hint">Where it's listed or sold</span></label>
+          <select id="it-platform"></select>
+          <label for="it-listed" id="it-listed-label">Date listed</label>
+          <input id="it-listed" type="date">
+          <label for="it-listprice">Listing price <span class="hint">Optional: what you're asking</span></label>
+          <input id="it-listprice" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+        </div>
+        <div id="sold-box" hidden>
+          <label for="it-sold">Date sold</label>
+          <input id="it-sold" type="date">
+          <label for="it-sale">Sale price</label>
+          <input id="it-sale" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+          <label for="it-shipin">Shipping charged to the buyer <span class="hint">0 if the buyer paid the platform for shipping, or picked it up</span></label>
+          <input id="it-shipin" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+          <label for="it-shipout">Shipping you paid <span class="hint">Postage or the label. 0 is fine.</span></label>
+          <input id="it-shipout" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+          <label for="it-fee">Platform fees</label>
+          <input id="it-fee" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+          <p class="small muted" id="fee-hint" style="margin-top:6px"></p>
+          <button type="button" class="btn-link" id="fee-reset" hidden>Work it out again</button>
+          <p class="small muted">Example rates: check your platform's current fees. Change a platform's rate in Settings.</p>
+        </div>
+      </div>
+      <div class="card flat" id="profit-box">
+        <div class="stat"><span>Profit on this item</span><b id="pv-profit"></b></div>
+        <p class="small muted" id="pv-line" style="margin-top:4px"></p>
+      </div>
+      <p class="err" id="it-err" hidden></p>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary btn-big" type="submit" id="it-save">Save item</button>
+      </div>
+      <div class="row-buttons" style="margin-top:10px">
+        <button type="button" class="btn btn-quiet" id="it-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="it-delete" hidden>Delete</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="sell" hidden>
+    <h1>Which item sold?</h1>
+    <p class="muted">Tap it to fill in the sale. Listed items come first, the longest-listed at the top.</p>
+    <div class="card">
+      <label for="sell-search">Search <span class="hint">By name or notes</span></label>
+      <input id="sell-search" type="text" autocomplete="off">
+      <ul class="list" id="sell-list" style="margin-top:10px"></ul>
+      <p class="muted small" id="sell-none">Nothing unsold to pick from.</p>
+    </div>
+    <div class="row-buttons">
+      <button type="button" class="btn btn-quiet" id="sell-new">Add an item that's already sold</button>
+      <button type="button" class="btn btn-quiet" id="sell-back">Back</button>
+    </div>
+  </section>
+
+  <section data-screen="ageing" hidden>
+    <h1>Ageing stock</h1>
+    <p class="muted">How long your listed items have been waiting, and the money tied up in them.</p>
+    <div class="card">
+      <ul class="list" id="ag-groups"></ul>
+    </div>
+    <div class="card flat">
+      <div class="stat" id="ag-unlisted-row"><span>Not listed yet</span><b id="ag-unlisted"></b></div>
+      <p class="small muted" id="ag-unlisted-note" style="margin-top:4px"></p>
+    </div>
+    <div class="card">
+      <h2>Listed items, oldest first</h2>
+      <ul class="list" id="ag-list"></ul>
+      <p class="muted small" id="ag-none">Nothing listed right now.</p>
+    </div>
+    <div class="card flat"><h2>Something sitting a while?</h2>
+      <p class="small">Items over 90 days often move with fresh photos, a new price or another platform. Or keep them: the app just shows you where things are.</p></div>
+  </section>
+
+  <section data-screen="profit" hidden>
+    <h1>Profit</h1>
+    <p class="muted">Every item sold, added up by month and by year. Tap a month to see what sold.</p>
+    <div class="card">
+      <label for="pr-year">Year</label>
+      <select id="pr-year"></select>
+      <div class="hero" style="padding:14px 0 6px">
+        <div class="label" id="yr-label">Profit</div>
+        <div class="hero-num" id="yr-profit"></div>
+      </div>
+      <div class="stat"><span>Items sold</span><b id="yr-sold"></b></div>
+      <div class="stat"><span>Sales <span class="hint">sale price + shipping charged</span></span><b id="yr-sales"></b></div>
+      <div class="stat"><span>Platform fees</span><b id="yr-fees"></b></div>
+      <div class="stat"><span>Shipping you paid</span><b id="yr-shipout"></b></div>
+      <div class="stat"><span>Cost of items sold</span><b id="yr-cost"></b></div>
+      <div class="stat"><span>Mileage</span><b id="yr-miles"></b></div>
+      <div class="stat"><span>Profit after mileage</span><b id="yr-after"></b></div>
+    </div>
+    <div class="card flat"><h2 id="months-head">By month</h2><ul class="list" id="month-list"></ul></div>
+  </section>
+
+  <section data-screen="month" hidden>
+    <h1 id="mo-title">Month</h1>
+    <div class="card">
+      <div class="hero" style="padding:4px 0 6px">
+        <div class="label">Profit</div>
+        <div class="hero-num" id="mo-profit"></div>
+      </div>
+      <div class="stat"><span>Items sold</span><b id="mo-sold"></b></div>
+      <div class="stat"><span>Sales <span class="hint">sale price + shipping charged</span></span><b id="mo-sales"></b></div>
+      <div class="stat"><span>Platform fees</span><b id="mo-fees"></b></div>
+      <div class="stat"><span>Shipping you paid</span><b id="mo-shipout"></b></div>
+      <div class="stat"><span>Cost of items sold</span><b id="mo-cost"></b></div>
+      <div class="stat"><span>Mileage</span><b id="mo-miles"></b></div>
+      <div class="stat"><span>Profit after mileage</span><b id="mo-after"></b></div>
+    </div>
+    <div class="card"><h2>Sold this month</h2><ul class="list" id="mo-items"></ul><p class="muted small" id="mo-items-none">Nothing sold this month.</p></div>
+    <div class="card flat"><h2>Trips this month</h2><ul class="list" id="mo-trips"></ul><p class="muted small" id="mo-trips-none">No trips logged this month.</p></div>
+    <button type="button" class="btn btn-quiet" id="mo-back">Back to Profit</button>
+  </section>
+
+  <section data-screen="mileage" hidden>
+    <h1>Mileage</h1>
+    <p class="muted">Trips for your selling: sourcing, the post office, drop-offs. Each trip keeps the rate it was logged at.</p>
+    <button type="button" class="btn btn-primary" id="trip-add">+ Add a trip</button>
+    <div class="card" style="margin-top:14px">
+      <label for="mi-month">Month</label>
+      <select id="mi-month"></select>
+      <div class="stat" style="margin-top:8px"><span>Distance</span><b id="mi-dist"></b></div>
+      <div class="stat"><span>Mileage at your rates</span><b id="mi-amount"></b></div>
+      <div class="stat"><span id="mi-year-label">This year</span><b id="mi-year"></b></div>
+      <ul class="list" id="trip-list" style="margin-top:10px"></ul>
+      <p class="muted small" id="trip-none">No trips this month.</p>
+    </div>
+    <p class="small muted" id="mi-rate-line"></p>
+  </section>
+
+  <section data-screen="trip" hidden>
+    <h1 id="trip-title">Add a trip</h1>
+    <form id="trip-form" class="card" novalidate>
+      <label for="tr-date">Date</label>
+      <input id="tr-date" type="date">
+      <label for="tr-dist" id="tr-dist-label">Distance (km)</label>
+      <input id="tr-dist" type="text" inputmode="decimal" autocomplete="off" placeholder="0.0">
+      <label for="tr-note">What for <span class="hint">Optional: sourcing, post office</span></label>
+      <input id="tr-note" type="text" maxlength="60" autocomplete="off">
+      <label for="tr-rate" id="tr-rate-label">Rate per km</label>
+      <input id="tr-rate" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+      <p class="small muted" id="tr-preview" style="margin-top:8px"></p>
+      <p class="err" id="tr-err" hidden></p>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary" type="submit" id="tr-save">Save trip</button>
+        <button type="button" class="btn btn-quiet" id="tr-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="tr-delete" hidden>Delete</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="plat" hidden>
+    <h1 id="plat-title">Change platform</h1>
+    <form id="plat-form" class="card" novalidate>
+      <p class="small"><b>Example rates: check your platform's current fees.</b> A sale's fee is worked out when you record it, so a new rate changes new sales only.</p>
+      <label for="pl-name">Platform</label>
+      <input id="pl-name" type="text" maxlength="30" autocomplete="off" placeholder="Market stall">
+      <label for="pl-rate">Fee as a % of the sale <span class="hint">Up to 2 decimals, such as 13.25. 0 for none.</span></label>
+      <input id="pl-rate" type="text" inputmode="decimal" autocomplete="off" placeholder="0">
+      <label for="pl-fixed">Fixed fee per order <span class="hint">0 for none</span></label>
+      <input id="pl-fixed" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00">
+      <label class="check"><input id="pl-onship" type="checkbox"> The % is also taken from the shipping charged</label>
+      <p class="small muted" id="pl-example" style="margin-top:8px"></p>
+      <p class="err" id="pl-err" hidden></p>
+      <div class="row-buttons" style="margin-top:14px">
+        <button class="btn btn-primary" type="submit" id="pl-save">Save platform</button>
+        <button type="button" class="btn btn-quiet" id="pl-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="pl-delete" hidden>Delete</button>
+      </div>
+    </form>
+  </section>
+
+  <section data-screen="settings" hidden>
+    <h1>Settings</h1>
+    <form id="set-form" class="card" novalidate>
+      <h2>Your shop</h2>
+      <fieldset class="plain" style="margin-top:0"><legend>Currency</legend>
+        <div class="chips" role="radiogroup" aria-label="Currency" id="s-cur-chips"></div>
+      </fieldset>
+      <div id="s-cur-own-wrap" hidden><label for="s-cur-own">Your currency symbol <span class="hint">Up to 4 characters</span></label>
+        <input id="s-cur-own" type="text" maxlength="4" autocomplete="off"></div>
+      <fieldset class="plain"><legend>Distances in <span class="hint">A label only: trips you've logged aren't converted.</span></legend>
+        <div class="chips" role="radiogroup" aria-label="Distances in">
+          <label class="chip"><input type="radio" name="unit" value="km"><span>Kilometres (km)</span></label>
+          <label class="chip"><input type="radio" name="unit" value="mi"><span>Miles</span></label>
+        </div>
+      </fieldset>
+      <label for="s-rate" id="s-rate-label">Mileage rate per km <span class="hint">Used for new trips. Each trip keeps the rate it was logged at.</span></label>
+      <input id="s-rate" type="text" inputmode="decimal" autocomplete="off">
+      <p class="err" id="s-err" hidden></p>
+      <p class="muted small" id="s-saved" aria-live="polite"></p>
+    </form>
+    <div class="card">
+      <h2>Platforms and fees</h2>
+      <p class="small"><b>Example rates: check your platform's current fees.</b> A sale's fee is worked out when you record it; changing a rate here changes new sales only. Tap a platform to change it.</p>
+      <ul class="list" id="plat-list"></ul>
+      <button type="button" class="btn btn-quiet" id="plat-add">+ Add a platform</button>
+    </div>
+    <div class="card flat">
+      <h2>Look</h2>
+      <div class="chips" role="radiogroup" aria-label="Theme">
+        <label class="chip"><input type="radio" name="theme" value="auto"><span>Follow my device</span></label>
+        <label class="chip"><input type="radio" name="theme" value="light"><span>Light</span></label>
+        <label class="chip"><input type="radio" name="theme" value="dark"><span>Dark</span></label>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Backup</h2>
+      <p>Your information stays in this browser on this device. A backup is a small file with everything in it, so you can get it back if the browser's data is cleared or you change devices.</p>
+      <p class="muted small" id="last-backup"></p>
+      <div class="row-buttons">
+        <button type="button" class="btn btn-primary" id="backup-btn">Back up now</button>
+        <label class="btn btn-quiet" for="restore-file" style="margin:0">Restore a backup</label>
+        <input id="restore-file" type="file" accept=".json,application/json" hidden>
+      </div>
+      <div id="restore-msg" aria-live="polite"></div>
+    </div>
+    <div class="card flat">
+      <h2>Sample data</h2>
+      <p id="sample-state"></p>
+      <button type="button" class="btn btn-quiet" id="sample-btn"></button>
+    </div>
+    <div class="card flat">
+      <h2>Start fresh</h2>
+      <p>Deletes everything in the app from this browser: items, sales, trips and your platform rates. Back up first if you might want it again.</p>
+      <button type="button" class="btn btn-danger" id="fresh-btn">Start fresh</button>
+    </div>
+    <div class="card flat">
+      <h2>Help</h2>
+      <p>How your information is kept, backups, moving to a new device, and how every number is worked out.</p>
+      <button type="button" class="btn btn-quiet" id="help-btn">Open Help</button>
+    </div>
+    <p class="muted small" id="app-version" aria-live="polite"></p>
+    <footer class="foot">Reseller Inventory &amp; Profit · version 1 · HOLLOWAY &amp; HART · Digital downloads that do what they say · Made in Melbourne</footer>
+  </section>
+
+  <section data-screen="help" hidden>
+    <h1>Help</h1>
+    <div class="card"><h2>Where your information is kept</h2>
+      <p>Everything you type stays in this browser on this device. Nothing is sent anywhere, and the app works with no internet. There is no account and no subscription. The app doesn't connect to any selling platform: you type your items and sales in yourself.</p></div>
+    <div class="card"><h2>Keep a backup</h2>
+      <p>Settings → Back up now saves a small .json file to your downloads. Do it every few weeks. The app reminds you if it has been 30 days.</p>
+      <p>If you clear your browser's history or site data, the app's information goes with it. A backup brings it back: Settings → Restore a backup.</p></div>
+    <div class="card"><h2>Open it the same way each time</h2>
+      <p>Each browser keeps its own copy. If you open the app in two different browsers, you get two separate copies. Pick one and keep using it. Restore your backup if it ever opens empty.</p></div>
+    <div class="card"><h2>A new phone or computer</h2>
+      <p>On the old device: Settings → Back up now. Copy the backup file to the new device, open the app there, then Settings → Restore a backup.</p></div>
+    <div class="card"><h2>The numbers</h2>
+      <p>Profit on an item = sale price + shipping charged to the buyer − platform fees − shipping you paid − what you paid for the item.</p>
+      <p>Fees = the platform's % of the sale price (plus the shipping charged, if that platform takes its % from shipping too) + its fixed fee per order, rounded to the cent. The fee is worked out when you record the sale and kept with it, so changing a rate later changes new sales only. You can always type the fee your platform actually charged.</p>
+      <p>A month's numbers are every item sold that month: sales (sale price + shipping charged), fees, shipping you paid, cost of the items and profit. Mileage = each trip's distance × its rate; profit after mileage = profit − mileage.</p>
+      <p>Ageing: days since an item was listed, in groups of 0–30 days, 31–90 days and over 90 days.</p></div>
+    <div class="card"><h2>Fee rates</h2>
+      <p>The rates the app starts with are examples: check your platform's current fees and type your own in Settings → Platforms and fees. Add any other place you sell, such as a market stall.</p></div>
+    <div class="card"><h2>The CSV</h2>
+      <p>Items → Export items as CSV saves every item as a spreadsheet file: dates, platform, prices, shipping, fees, profit and notes. Handy at the end of the year.</p>
+      <p class="muted small">This app is a record of your own numbers. It isn't tax advice.</p></div>
+    <button type="button" class="btn btn-quiet" id="help-back">Back to Settings</button>
+  </section>
+</main>
+</div>
+<nav class="tabs" id="tabs" aria-label="Screens"><div class="wrap">
+  <button type="button" data-nav="home"><span class="ico" aria-hidden="true">&#9679;</span><span class="lbl">Home</span></button>
+  <button type="button" data-nav="items"><span class="ico" aria-hidden="true">&#9636;</span><span class="lbl">Items</span></button>
+  <button type="button" data-nav="ageing"><span class="ico" aria-hidden="true">&#9684;</span><span class="lbl">Ageing</span></button>
+  <button type="button" data-nav="profit"><span class="ico" aria-hidden="true">&#8721;</span><span class="lbl">Profit</span></button>
+  <button type="button" data-nav="mileage"><span class="ico" aria-hidden="true">&#8644;</span><span class="lbl">Mileage</span></button>
+  <button type="button" data-nav="settings"><span class="ico" aria-hidden="true">&#9881;</span><span class="lbl">Settings</span></button>
+</div></nav>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<div id="modal" hidden></div>
+
+<script src="./app.js"></script>
+</body>
+</html>
