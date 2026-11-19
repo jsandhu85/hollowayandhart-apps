@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; manifest-src 'self'; worker-src 'self'; font-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="description" content="Your routines, every set&#x27;s weight and reps with last time beside it, a calm suggestion for the next step up, your bests and estimated 1RM, history by week, body measurements and a rest timer. Works offline, no account, no subscription; your workouts stay on your device.">
 <meta name="author" content="Jaz Sandhu">
-<meta name="generator" content="Holloway &amp; Hart 18Nov2026.4">
+<meta name="generator" content="Holloway &amp; Hart 18Nov2026.5">
 <meta name="color-scheme" content="light dark">
 <title>Workout Tracker · Holloway &amp; Hart</title>
 <link rel="manifest" href="./manifest.webmanifest">
@@ -52,7 +52,10 @@ main { padding-top: 16px; }
 .small { font-size: .9rem; }
 .hero { text-align: center; padding: 22px 16px 18px; }
 .hero .label { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
-.hero-num { font-size: clamp(2.6rem, 13vw, 4rem); font-weight: bold; line-height: 1.05; margin: 2px 0 8px; overflow-wrap: anywhere; }
+/* 19 Nov 2026 (Cowork's real-phone test of 137: 'AU$4,400.0' then '0' on the next line): a hero figure never breaks. It stays on one
+   line and core.js (fitHero) steps its font down until it fits the card; words after a figure (HH.hero) sit on their own line. */
+.hero-num { font-size: clamp(2.6rem, 13vw, 4rem); font-weight: bold; line-height: 1.05; margin: 2px 0 8px; white-space: nowrap; }
+.hero-num .hero-words { display: block; font-size: 1.25rem; line-height: 1.25; margin-top: 4px; white-space: normal; }
 .hero .cap { font-size: 1.05rem; }
 .banner { border-radius: 12px; padding: 12px 14px; margin: 0 0 14px; background: var(--soft); border: 1px solid var(--line); }
 .banner strong { display: block; margin-bottom: 2px; }
@@ -110,6 +113,9 @@ nav.tabs button {
   font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
 }
 nav.tabs button .ico { font-size: 1.25rem; line-height: 1; }
+/* 19 Nov 2026: a drawn tab icon (141 Clients, 71 People: the smiling-face character showed as a colour emoji on a real phone), sized and
+   coloured like the text icons beside it */
+nav.tabs button .ico-svg { display: inline-block; width: 1em; height: 1em; vertical-align: -0.12em; }
 nav.tabs button.on { color: var(--accent); }
 nav.tabs button.on .lbl { text-decoration: underline; text-underline-offset: 4px; }
 #toast {
@@ -330,7 +336,7 @@ nav.tabs button .ico { font-size: 1.1rem; }
     <div class="card flat">
       <h2>Recent bests</h2>
       <ul class="list" id="home-bests"></ul>
-      <p class="muted small" id="home-bests-none">Your bests show here once you've done an exercise twice.</p>
+      <p class="muted small" id="home-bests-none">Your bests show here after your first workout: the first time you do an exercise sets its first record.</p>
     </div>
   </section>
 
@@ -348,7 +354,7 @@ nav.tabs button .ico { font-size: 1.1rem; }
     <div id="wo-live" hidden>
       <h1 id="wo-name">Workout</h1>
       <div class="card flat wo-top">
-        <div class="wo-date"><label for="wo-date">Date</label><input id="wo-date" type="date"></div>
+        <div class="wo-date"><label for="wo-date">Date</label><input id="wo-date" type="date" data-keep></div>
         <p class="small" id="wo-sum" aria-live="polite"></p>
       </div>
       <div id="wo-items"></div>
@@ -541,7 +547,7 @@ nav.tabs button .ico { font-size: 1.1rem; }
     <h1 id="be-title">Add measurements</h1>
     <form id="be-form" class="card" novalidate>
       <label for="be-date">Date</label>
-      <input id="be-date" type="date">
+      <input id="be-date" type="date" data-keep>
       <div id="be-fields"></div>
       <label for="be-note">Note <span class="hint">Optional</span></label>
       <input id="be-note" type="text" maxlength="80" autocomplete="off">
@@ -649,7 +655,7 @@ nav.tabs button .ico { font-size: 1.1rem; }
     <div class="card"><h2>How the numbers are worked out</h2>
       <p><b>Volume</b> = weight × reps, added up over every ticked set. A bodyweight set with no weight adds 0.</p>
       <p><b>Estimated 1RM</b> (the most you might lift once) uses the Epley formula: weight × (1 + reps ÷ 30), rounded to the nearest 0.5 kg or 1 lb. A single rep is the weight itself. It is an estimate, and closest for sets of about 10 reps or fewer.</p>
-      <p><b>Bests</b> are your heaviest weight, best estimated 1RM and most reps at each weight, each with the date you first reached it.</p>
+      <p><b>Bests</b> are your heaviest weight, best estimated 1RM and most reps at each weight, each with the date you first reached it. The first time you log an exercise, its top set is its first record.</p>
       <p><b>Body</b> changes compare each measurement with its previous entry.</p>
       <p><b>Weeks</b> start on the day in Settings.</p></div>
     <div class="card"><h2>The rest timer</h2>
@@ -661,12 +667,12 @@ nav.tabs button .ico { font-size: 1.1rem; }
 </div>
 <nav class="tabs" id="tabs" aria-label="Screens"><div class="wrap">
   <button type="button" data-nav="home"><span class="ico" aria-hidden="true">&#8962;</span><span class="lbl">Home</span></button>
-  <button type="button" data-nav="workout"><span class="ico" aria-hidden="true">&#9654;</span><span class="lbl">Workout</span></button>
+  <button type="button" data-nav="workout"><span class="ico" aria-hidden="true">&#9654;&#65038;</span><span class="lbl">Workout</span></button>
   <button type="button" data-nav="routines"><span class="ico" aria-hidden="true">&#9776;</span><span class="lbl">Routines</span></button>
   <button type="button" data-nav="history"><span class="ico" aria-hidden="true">&#9719;</span><span class="lbl">History</span></button>
   <button type="button" data-nav="progress"><span class="ico" aria-hidden="true">&#9650;</span><span class="lbl">Progress</span></button>
   <button type="button" data-nav="body"><span class="ico" aria-hidden="true">&#9711;</span><span class="lbl">Body</span></button>
-  <button type="button" data-nav="settings"><span class="ico" aria-hidden="true">&#9881;</span><span class="lbl">Settings</span></button>
+  <button type="button" data-nav="settings"><span class="ico" aria-hidden="true">&#9881;&#65038;</span><span class="lbl">Settings</span></button>
 </div></nav>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <div id="modal" hidden></div>

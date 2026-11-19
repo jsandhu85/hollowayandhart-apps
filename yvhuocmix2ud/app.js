@@ -1,4 +1,4 @@
-window.HH_BUILD = {"id": "143", "version": "18Nov2026.4", "hosted": true};
+window.HH_BUILD = {"id": "143", "version": "18Nov2026.5", "hosted": true};
 /* Holloway & Hart app chassis (apps/core.js), 7 Nov 2026.
    Shared by every single-file offline app: calendar dates as day numbers (no time-zone drift), money in integer cents,
    localStorage with a schema version and a clear banner when the browser won't keep data, Backup / Restore as .json,
@@ -279,7 +279,85 @@ var HH = (function () {
       }).then(function () { offlineReady(); setTimeout(offlineReady, 1500); setTimeout(offlineReady, 4000); }, function () {});
     } catch (e) {}
   }
-  function boot() { showVersion(); installCard(); startWorker(); }
+  // ── big figures (19 Nov 2026, Cowork's real-phone test of 137: the 'You're set' card showed 'AU$4,400.0' and '0' on the next
+  // line). A .hero-num stays on one line (core.css) and its font steps down here until the figure fits its card: when its text
+  // changes (MutationObserver), when it first shows or the screen turns (ResizeObserver, width changes only, in the next frame so
+  // the observer never loops). HH.hero(el, "AU$12.00 over") puts the words after a figure on their own line beneath it.
+  var FIT_MIN = 16;
+  function fitHero(el) {
+    var w = el.clientWidth;
+    if (!w) return;                          // hidden: fitted when it shows
+    el.style.fontSize = "";
+    var size = parseFloat(window.getComputedStyle(el).fontSize) || 0;
+    for (var i = 0; i < 8 && el.scrollWidth > w && size > FIT_MIN; i++) {
+      size = Math.max(FIT_MIN, Math.floor(size * (w - 2) / el.scrollWidth * 10) / 10);
+      el.style.fontSize = size + "px";
+    }
+  }
+  function hero(el, text) {
+    var t = String(text == null ? "" : text), m = /^(\S*\d\S*) (.+)$/.exec(t);
+    if (!m) { el.textContent = t; return; }
+    el.innerHTML = esc(m[1]) + '<span class="hero-words"> ' + esc(m[2]) + "</span>";
+  }
+  function watchHeroes() {
+    var els = $$(".hero-num");
+    if (!els.length) return;
+    if (window.MutationObserver) {
+      var mo = new MutationObserver(function (recs) {
+        var todo = [];
+        recs.forEach(function (r) {
+          var n = r.target.nodeType === 1 ? r.target : r.target.parentNode, el = n && n.closest ? n.closest(".hero-num") : null;
+          if (el && todo.indexOf(el) < 0) todo.push(el);
+        });
+        todo.forEach(fitHero);
+      });
+      els.forEach(function (el) { mo.observe(el, { childList: true, characterData: true, subtree: true }); });
+    }
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(function (entries) {
+        var todo = [];
+        entries.forEach(function (en) {
+          var w = Math.round(en.contentRect.width);
+          if (w !== en.target.hhFitW) { en.target.hhFitW = w; todo.push(en.target); }
+        });
+        if (todo.length) window.requestAnimationFrame(function () { todo.forEach(fitHero); });
+      });
+      els.forEach(function (el) { ro.observe(el); });
+    } else {
+      window.addEventListener("resize", function () { els.forEach(fitHero); });
+    }
+    els.forEach(fitHero);
+  }
+
+  // ── a date the app needs (19 Nov 2026, Cowork's real-phone test of 137: the date picker's Reset button emptied the box and the form
+  // said 'Day: ?'). A date box marked data-keep is never left empty: it goes back to the day the form opened with (HH.setDate),
+  // or today when it opened empty, kept inside the box's min and max. On a phone or tablet that happens the moment it empties
+  // (Reset / Clear in the picker), before the app's own change handler reads it; on a computer when the box loses focus, so typing
+  // a date part by part is never fought. Optional dates (no data-keep) can still be cleared.
+  function setDate(el, text) {
+    el.value = text || "";
+    el.setAttribute("data-open", el.value);
+  }
+  function keepDate(el) {
+    // the attribute, not el.type: a browser with no date picker reports type 'text' for the same box
+    if (!el || !el.getAttribute || el.getAttribute("type") !== "date" || !el.hasAttribute("data-keep") || el.value !== "") return false;
+    var v = el.getAttribute("data-open") || iso(today());
+    if (el.min && v < el.min) v = el.min;
+    if (el.max && v > el.max) v = el.max;
+    el.value = v;
+    return el.value !== "";
+  }
+  function watchDates() {
+    var now = function (e) { if (mobile()) keepDate(e.target); };
+    document.addEventListener("input", now, true);
+    document.addEventListener("change", now, true);
+    document.addEventListener("focusout", function (e) {
+      if (keepDate(e.target)) e.target.dispatchEvent(new Event("change", { bubbles: true }));
+    }, true);
+  }
+
+  function boot() { showVersion(); installCard(); startWorker(); watchHeroes(); }
+  watchDates();
   if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", boot); } else { boot(); }
 
   return {
@@ -287,7 +365,8 @@ var HH = (function () {
     monthsBetween: monthsBetween, weekday: weekday, fmtDate: fmtDate, fmtShort: fmtShort, fmtLong: fmtLong, mod: mod,
     parseMoney: parseMoney, money: money, plain: plain, esc: esc, $: $, $$: $$, Store: Store, download: download,
     readFile: readFile, toast: toast, confirmStep: confirmStep, show: show, applyTheme: applyTheme,
-    build: BUILD, standalone: standalone, persist: persist, saveFile: saveFile, savedMessage: savedMessage
+    build: BUILD, standalone: standalone, persist: persist, saveFile: saveFile, savedMessage: savedMessage,
+    hero: hero, fitHero: fitHero, setDate: setDate, keepDate: keepDate
   };
 })();
 
@@ -557,7 +636,12 @@ var HH = (function () {
           Object.keys(byW).map(Number).sort(function (a, b) { return b - a; }).forEach(function (wk) {
             if (r0.byW[wk] != null && byW[wk] > r0.byW[wk]) ev.push({ ex: ex, kind: "reps", w: wk, r: byW[wk] });
           });
-        } else r0 = run[ex] = { hw: 0, be: 0, byW: {} };
+        } else {
+          // the first time an exercise is logged, its top set is a first record (19 Nov 2026, Cowork's real-phone test: the very first
+          // workout said 'No new bests this time'): the heaviest weight, at the most reps done with it
+          ev.push({ ex: ex, kind: "first", w: hw, r: byW[hw] });
+          r0 = run[ex] = { hw: 0, be: 0, byW: {} };
+        }
         if (hw > r0.hw) r0.hw = hw;
         if (be && be.e > r0.be) r0.be = be.e;
         Object.keys(byW).forEach(function (wk) { if (r0.byW[wk] == null || byW[wk] > r0.byW[wk]) r0.byW[wk] = byW[wk]; });
@@ -568,6 +652,7 @@ var HH = (function () {
   }
   function bestText(b) {
     var n = exById(b.ex).name;
+    if (b.kind === "first") return n + " · first record " + (b.w > 0 ? wt(b.w) + " × " + b.r : plural(b.r, "rep", "reps") + " at bodyweight");
     if (b.kind === "heaviest") return n + " · heaviest " + wt(b.w);
     if (b.kind === "e1rm") return n + " · estimated 1RM " + wt(b.e) + " (" + num(b.w) + " × " + b.r + ")";
     return n + " · " + plural(b.r, "rep", "reps") + " at " + (b.w > 0 ? wt(b.w) : "bodyweight");
@@ -713,7 +798,7 @@ var HH = (function () {
     tickRest();
     if (!c) return;
     $("#wo-name").textContent = (c.editId != null ? "Changing: " : "") + c.name;
-    $("#wo-date").value = c.date;
+    HH.setDate($("#wo-date"), c.date);
     $("#wo-discard").textContent = c.editId != null ? "Stop changing it" : "Discard this workout";
     $("#wo-finish").textContent = c.editId != null ? "Save changes" : "Finish workout";
     renderItems();
@@ -805,6 +890,8 @@ var HH = (function () {
     if (r === undefined) r = it.target.reps;
     if (isNaN(r)) { itemMsg(i, "Reps for set " + (j + 1) + ": a whole number from 1 to 100."); $('[data-r="' + id + '"]').focus(); return; }
     s.w = w; s.r = r; s.done = true;
+    // the next sets' empty weight boxes take the weight just used (19 Nov 2026, Cowork's optional fix); a typed or last-time weight stays
+    if (w > 0) it.sets.forEach(function (x, k) { if (k > j && !x.done && x.w == null) x.w = w; });
     save();
     renderItem(i, '[data-done="' + id + '"]');
     if (D.settings.autoRest) startRest(true);
@@ -1198,7 +1285,7 @@ var HH = (function () {
   function openBodyEdit(b) {
     editingBody = b || null;
     $("#be-title").textContent = b ? "Change measurements" : "Add measurements";
-    $("#be-date").value = b ? b.date : HH.iso(T);
+    HH.setDate($("#be-date"), b ? b.date : HH.iso(T));
     $("#be-fields").innerHTML = D.measures.map(function (m) {
       return '<div class="be-field"><label for="be-m-' + m.id + '">' + esc(m.name) + ' <span class="hint">' + esc(m.unit) + '</span></label><input id="be-m-' + m.id +
         '" data-mv="' + m.id + '" data-name="' + esc(m.name) + '" type="text" inputmode="decimal" autocomplete="off" value="' + (b && b.vals[m.id] != null ? num(b.vals[m.id], true) : "") + '"></div>';
