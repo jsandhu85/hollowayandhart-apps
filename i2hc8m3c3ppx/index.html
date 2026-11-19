@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; manifest-src 'self'; worker-src 'self'; font-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="description" content="Your recipes, the week&#x27;s meals and a grocery list that adds itself up, aisle by aisle, in one app: servings scaling, a pantry, copy last week. Works offline, no account, no subscription; your recipes stay on your device.">
 <meta name="author" content="Jaz Sandhu">
-<meta name="generator" content="Holloway &amp; Hart 18Nov2026.4">
+<meta name="generator" content="Holloway &amp; Hart 18Nov2026.5">
 <meta name="color-scheme" content="light dark">
 <title>Meal Planner · Holloway &amp; Hart</title>
 <link rel="manifest" href="./manifest.webmanifest">
@@ -52,7 +52,10 @@ main { padding-top: 16px; }
 .small { font-size: .9rem; }
 .hero { text-align: center; padding: 22px 16px 18px; }
 .hero .label { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
-.hero-num { font-size: clamp(2.6rem, 13vw, 4rem); font-weight: bold; line-height: 1.05; margin: 2px 0 8px; overflow-wrap: anywhere; }
+/* 19 Nov 2026 (Cowork's real-phone test of 137: 'AU$4,400.0' then '0' on the next line): a hero figure never breaks. It stays on one
+   line and core.js (fitHero) steps its font down until it fits the card; words after a figure (HH.hero) sit on their own line. */
+.hero-num { font-size: clamp(2.6rem, 13vw, 4rem); font-weight: bold; line-height: 1.05; margin: 2px 0 8px; white-space: nowrap; }
+.hero-num .hero-words { display: block; font-size: 1.25rem; line-height: 1.25; margin-top: 4px; white-space: normal; }
 .hero .cap { font-size: 1.05rem; }
 .banner { border-radius: 12px; padding: 12px 14px; margin: 0 0 14px; background: var(--soft); border: 1px solid var(--line); }
 .banner strong { display: block; margin-bottom: 2px; }
@@ -110,6 +113,9 @@ nav.tabs button {
   font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
 }
 nav.tabs button .ico { font-size: 1.25rem; line-height: 1; }
+/* 19 Nov 2026: a drawn tab icon (141 Clients, 71 People: the smiling-face character showed as a colour emoji on a real phone), sized and
+   coloured like the text icons beside it */
+nav.tabs button .ico-svg { display: inline-block; width: 1em; height: 1em; vertical-align: -0.12em; }
 nav.tabs button.on { color: var(--accent); }
 nav.tabs button.on .lbl { text-decoration: underline; text-underline-offset: 4px; }
 #toast {
@@ -453,7 +459,7 @@ nav.tabs button .ico { font-size: 1.1rem; }
       <label for="own-item">Item</label>
       <input id="own-item" type="text" maxlength="80" autocomplete="off" placeholder="Dishwashing liquid">
       <div class="three">
-        <div><label for="own-amt">Amount <span class="hint">Optional</span></label><input id="own-amt" type="text" inputmode="decimal" autocomplete="off"></div>
+        <div><label for="own-amt">Amount <span class="hint">Optional</span></label><input id="own-amt" type="text" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off"></div>
         <div><label for="own-unit">Unit <span class="hint">Optional</span></label><input id="own-unit" type="text" maxlength="20" autocomplete="off"></div>
         <div><label for="own-aisle">Aisle</label><select id="own-aisle"></select></div>
       </div>
@@ -472,7 +478,7 @@ nav.tabs button .ico { font-size: 1.1rem; }
       <label for="pa-item">Item</label>
       <input id="pa-item" type="text" maxlength="80" autocomplete="off" placeholder="Rice">
       <div class="two">
-        <div><label for="pa-amt">Amount <span class="hint">Optional</span></label><input id="pa-amt" type="text" inputmode="decimal" autocomplete="off"></div>
+        <div><label for="pa-amt">Amount <span class="hint">Optional</span></label><input id="pa-amt" type="text" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off"></div>
         <div><label for="pa-unit">Unit <span class="hint">Optional</span></label><input id="pa-unit" type="text" maxlength="20" autocomplete="off"></div>
       </div>
       <p class="err" id="pa-err" hidden></p>
@@ -555,7 +561,7 @@ nav.tabs button .ico { font-size: 1.1rem; }
     <div class="card"><h2>A new phone or computer</h2>
       <p>On the old device: Settings → Back up now. Move the backup file to the new device (email it to yourself, or use a cloud drive), open the app there, then Settings → Restore a backup.</p></div>
     <div class="card"><h2>Amounts you can type</h2>
-      <p>Whole numbers (2), decimals with a point (1.5), fractions (1/2), mixed numbers (1 1/2) and fraction characters (½, ¾). Leave the amount blank for things like 'salt to taste'. Units are yours to type: g, ml, cups, tbsp, tins.</p></div>
+      <p>Whole numbers (2), decimals with a point (1.5), fractions (1/2), mixed numbers (1 1/2) and fraction characters copied from a recipe (½, ¾). The Amount box opens the keyboard with / and a space. Leave the amount blank for things like 'salt to taste'. Units are yours to type: g, ml, cups, tbsp, tins.</p></div>
     <div class="card"><h2>Servings</h2>
       <p>Each amount is multiplied by the servings you want and divided by what the recipe serves. A recipe for 4 cooked for 6 uses 1.5 times everything. Amounts are shown to 2 decimal places at most (0.375 shows as 0.38). At the recipe's own servings you see the amounts just as you typed them.</p></div>
     <div class="card"><h2>How the grocery list is worked out</h2>
@@ -575,7 +581,7 @@ nav.tabs button .ico { font-size: 1.1rem; }
   <button type="button" data-nav="planner"><span class="ico" aria-hidden="true">&#9636;</span><span class="lbl">Planner</span></button>
   <button type="button" data-nav="list"><span class="ico" aria-hidden="true">&#10003;</span><span class="lbl">List</span></button>
   <button type="button" data-nav="pantry"><span class="ico" aria-hidden="true">&#9635;</span><span class="lbl">Pantry</span></button>
-  <button type="button" data-nav="settings"><span class="ico" aria-hidden="true">&#9881;</span><span class="lbl">Settings</span></button>
+  <button type="button" data-nav="settings"><span class="ico" aria-hidden="true">&#9881;&#65038;</span><span class="lbl">Settings</span></button>
 </div></nav>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <div id="modal" hidden></div>
