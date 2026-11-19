@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; manifest-src 'self'; worker-src 'self'; font-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="description" content="Small business bookkeeping in one app: income and expenses by category with receipt notes, GST and BAS quarters (or sales tax or VAT), profit and loss by month and year, a mileage log and CSV export. Works offline, no account, no subscription; your information stays on your device.">
 <meta name="author" content="Jaz Sandhu">
-<meta name="generator" content="Holloway &amp; Hart 18Nov2026.6">
+<meta name="generator" content="Holloway &amp; Hart 18Nov2026.7">
 <meta name="color-scheme" content="light dark">
 <title>Bookkeeping · Holloway &amp; Hart</title>
 <link rel="manifest" href="./manifest.webmanifest">
@@ -52,7 +52,10 @@ main { padding-top: 16px; }
 .small { font-size: .9rem; }
 .hero { text-align: center; padding: 22px 16px 18px; }
 .hero .label { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
-.hero-num { font-size: clamp(2.6rem, 13vw, 4rem); font-weight: bold; line-height: 1.05; margin: 2px 0 8px; overflow-wrap: anywhere; }
+/* 19 Nov 2026 (Cowork's real-phone test of 137: 'AU$4,400.0' then '0' on the next line): a hero figure never breaks. It stays on one
+   line and core.js (fitHero) steps its font down until it fits the card; words after a figure (HH.hero) sit on their own line. */
+.hero-num { font-size: clamp(2.6rem, 13vw, 4rem); font-weight: bold; line-height: 1.05; margin: 2px 0 8px; white-space: nowrap; }
+.hero-num .hero-words { display: block; font-size: 1.25rem; line-height: 1.25; margin-top: 4px; white-space: normal; }
 .hero .cap { font-size: 1.05rem; }
 .banner { border-radius: 12px; padding: 12px 14px; margin: 0 0 14px; background: var(--soft); border: 1px solid var(--line); }
 .banner strong { display: block; margin-bottom: 2px; }
@@ -110,6 +113,9 @@ nav.tabs button {
   font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
 }
 nav.tabs button .ico { font-size: 1.25rem; line-height: 1; }
+/* 19 Nov 2026: a drawn tab icon (141 Clients, 71 People: the smiling-face character showed as a colour emoji on a real phone), sized and
+   coloured like the text icons beside it */
+nav.tabs button .ico-svg { display: inline-block; width: 1em; height: 1em; vertical-align: -0.12em; }
 nav.tabs button.on { color: var(--accent); }
 nav.tabs button.on .lbl { text-decoration: underline; text-underline-offset: 4px; }
 #toast {
@@ -298,7 +304,7 @@ nav.tabs button .ico { font-size: 1.1rem; }
       <input id="e-desc" type="text" maxlength="60" autocomplete="off">
       <fieldset class="plain"><legend>Category</legend><div class="chips" id="e-cats"></div></fieldset>
       <p class="small" id="e-day-line" style="margin-top:12px">Day: <b id="e-day-text">Today</b> <button type="button" class="btn-link" id="e-day-change">Change day</button></p>
-      <div id="e-day-wrap" hidden><label for="e-date">Day</label><input id="e-date" type="date"></div>
+      <div id="e-day-wrap" hidden><label for="e-date">Day</label><input id="e-date" type="date" data-keep></div>
       <label for="e-note">Receipt note <span class="hint">Optional: an invoice number, or where the receipt is kept</span></label>
       <textarea id="e-note" rows="2" maxlength="200"></textarea>
       <div class="row-buttons" style="margin-top:14px">
@@ -434,7 +440,7 @@ nav.tabs button .ico { font-size: 1.1rem; }
       <label for="t-purpose">What for <span class="hint">Optional, such as Supplier pick-up</span></label>
       <input id="t-purpose" type="text" maxlength="60" autocomplete="off">
       <label for="t-date">Day</label>
-      <input id="t-date" type="date">
+      <input id="t-date" type="date" data-keep>
       <div class="row-buttons" style="margin-top:14px">
         <button class="btn btn-primary" type="submit" id="t-save">Save trip</button>
         <button type="button" class="btn btn-quiet" id="t-cancel">Cancel</button>
@@ -562,7 +568,7 @@ nav.tabs button .ico { font-size: 1.1rem; }
   <button type="button" data-nav="tax"><span class="ico" aria-hidden="true">&#9636;</span><span class="lbl" data-tx="tab">GST</span></button>
   <button type="button" data-nav="pl"><span class="ico" aria-hidden="true">&#8721;</span><span class="lbl">P&amp;L</span></button>
   <button type="button" data-nav="mileage"><span class="ico" aria-hidden="true">&#8674;</span><span class="lbl">Mileage</span></button>
-  <button type="button" data-nav="settings"><span class="ico" aria-hidden="true">&#9881;</span><span class="lbl">Settings</span></button>
+  <button type="button" data-nav="settings"><span class="ico" aria-hidden="true">&#9881;&#65038;</span><span class="lbl">Settings</span></button>
 </div></nav>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <div id="modal" hidden></div>
