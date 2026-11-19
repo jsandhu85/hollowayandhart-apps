@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; manifest-src 'self'; worker-src 'self'; font-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="description" content="A client book for nail techs, lash and brow artists and estheticians: client cards with patch tests and allergies in the client&#x27;s words, an appointment calendar, rebook reminders, services and prices, and your income by week or month. Works offline, no account, no subscription; your client details stay on your device.">
 <meta name="author" content="Jaz Sandhu">
-<meta name="generator" content="Holloway &amp; Hart 18Nov2026.3">
+<meta name="generator" content="Holloway &amp; Hart 18Nov2026.4">
 <meta name="color-scheme" content="light dark">
 <title>Client Book · Holloway &amp; Hart</title>
 <link rel="manifest" href="./manifest.webmanifest">
@@ -52,7 +52,10 @@ main { padding-top: 16px; }
 .small { font-size: .9rem; }
 .hero { text-align: center; padding: 22px 16px 18px; }
 .hero .label { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
-.hero-num { font-size: clamp(2.6rem, 13vw, 4rem); font-weight: bold; line-height: 1.05; margin: 2px 0 8px; overflow-wrap: anywhere; }
+/* 19 Nov 2026 (Cowork's real-phone test of 137: 'AU$4,400.0' then '0' on the next line): a hero figure never breaks. It stays on one
+   line and core.js (fitHero) steps its font down until it fits the card; words after a figure (HH.hero) sit on their own line. */
+.hero-num { font-size: clamp(2.6rem, 13vw, 4rem); font-weight: bold; line-height: 1.05; margin: 2px 0 8px; white-space: nowrap; }
+.hero-num .hero-words { display: block; font-size: 1.25rem; line-height: 1.25; margin-top: 4px; white-space: normal; }
 .hero .cap { font-size: 1.05rem; }
 .banner { border-radius: 12px; padding: 12px 14px; margin: 0 0 14px; background: var(--soft); border: 1px solid var(--line); }
 .banner strong { display: block; margin-bottom: 2px; }
@@ -110,6 +113,9 @@ nav.tabs button {
   font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
 }
 nav.tabs button .ico { font-size: 1.25rem; line-height: 1; }
+/* 19 Nov 2026: a drawn tab icon (141 Clients, 71 People: the smiling-face character showed as a colour emoji on a real phone), sized and
+   coloured like the text icons beside it */
+nav.tabs button .ico-svg { display: inline-block; width: 1em; height: 1em; vertical-align: -0.12em; }
 nav.tabs button.on { color: var(--accent); }
 nav.tabs button.on .lbl { text-decoration: underline; text-underline-offset: 4px; }
 #toast {
@@ -312,7 +318,7 @@ nav.tabs button .lbl { max-width: 100%; overflow: hidden; text-overflow: clip; w
       <div id="cal-week"></div>
       <div id="cal-day" hidden></div>
     </div>
-    <div class="card flat"><label for="cal-date" style="margin-top:0">Go to a date</label><input id="cal-date" type="date"></div>
+    <div class="card flat"><label for="cal-date" style="margin-top:0">Go to a date</label><input id="cal-date" type="date" data-keep></div>
   </section>
 
   <section data-screen="appt" hidden>
@@ -327,7 +333,7 @@ nav.tabs button .lbl { max-width: 100%; overflow: hidden; text-overflow: clip; w
       <div id="ap-service-other-wrap" hidden><label for="ap-service-other">What's it for?</label>
         <input id="ap-service-other" type="text" maxlength="40" autocomplete="off"></div>
       <div class="two">
-        <div><label for="ap-date">Day</label><input id="ap-date" type="date"></div>
+        <div><label for="ap-date">Day</label><input id="ap-date" type="date" data-keep></div>
         <div><label for="ap-time">Start time</label><input id="ap-time" type="time" step="300"></div>
       </div>
       <div class="two">
@@ -411,7 +417,7 @@ nav.tabs button .lbl { max-width: 100%; overflow: hidden; text-overflow: clip; w
     <h1 id="pt-title">Add a patch test</h1>
     <form id="patch-form" class="card" novalidate>
       <label for="pt-date">Date of the test</label>
-      <input id="pt-date" type="date">
+      <input id="pt-date" type="date" data-keep>
       <label for="pt-product">Product or area</label>
       <input id="pt-product" type="text" maxlength="60" autocomplete="off" placeholder="Lash glue, behind the ear">
       <label for="pt-result">Result <span class="hint">Your note, such as what you saw at 48 hours</span></label>
@@ -476,7 +482,7 @@ nav.tabs button .lbl { max-width: 100%; overflow: hidden; text-overflow: clip; w
       <label for="sl-client">Client <span class="hint">Optional</span></label>
       <select id="sl-client"></select>
       <label for="sl-date">Day</label>
-      <input id="sl-date" type="date">
+      <input id="sl-date" type="date" data-keep>
       <p class="err" id="sl-err" hidden></p>
       <div class="row-buttons" style="margin-top:14px">
         <button class="btn btn-primary" type="submit" id="sl-save">Save</button>
@@ -600,11 +606,11 @@ nav.tabs button .lbl { max-width: 100%; overflow: hidden; text-overflow: clip; w
 <nav class="tabs" id="tabs" aria-label="Screens"><div class="wrap">
   <button type="button" data-nav="home"><span class="ico" aria-hidden="true">&#9679;</span><span class="lbl">Today</span></button>
   <button type="button" data-nav="calendar"><span class="ico" aria-hidden="true">&#9636;</span><span class="lbl">Calendar</span></button>
-  <button type="button" data-nav="clients"><span class="ico" aria-hidden="true">&#9786;</span><span class="lbl">Clients</span></button>
+  <button type="button" data-nav="clients"><span class="ico" aria-hidden="true"><svg class="ico-svg" viewBox="0 0 24 24" width="1em" height="1em" focusable="false"><circle cx="12" cy="7.5" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21c0-4.6 3.6-7.5 8-7.5s8 2.9 8 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><span class="lbl">Clients</span></button>
   <button type="button" data-nav="rebook"><span class="ico" aria-hidden="true">&#8635;</span><span class="lbl">Rebook</span></button>
   <button type="button" data-nav="income"><span class="ico" aria-hidden="true">&#8721;</span><span class="lbl">Income</span></button>
   <button type="button" data-nav="services"><span class="ico" aria-hidden="true">&#9776;</span><span class="lbl">Services</span></button>
-  <button type="button" data-nav="settings"><span class="ico" aria-hidden="true">&#9881;</span><span class="lbl">Settings</span></button>
+  <button type="button" data-nav="settings"><span class="ico" aria-hidden="true">&#9881;&#65038;</span><span class="lbl">Settings</span></button>
 </div></nav>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <div id="modal" hidden></div>
